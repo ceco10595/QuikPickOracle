@@ -1,0 +1,335 @@
+OrderStage,ErrorCode,Message,Solution
+CREATE_ORDER,1_101000100-1_101500203,CREATE_ORDER_ERROR_PLEASE_CHECK_SYSTEM,Contact CV company. Summarize the problem at hand and instruct CV company to check the logs for associated SW/HW/CV/PMT
+QUERY_CONTAINER,2_2,MACHINE_IS_IN_USE,"Check if the cooler shopping cart is present in the CCR. If the CCR is stuck in the shopping cart, reboot the cooler. If system persists, contact CV company"
+QUERY_CONTAINER,2_4,ALGORITHM_FAILURE,"Algorithm failure means that the SW and CV versions are not as expected. Most likely, a SW update is needed. 
+
+1. Reboot cooler
+2. Confirm SW version and CV version
+3. Take a photo of the Service UI ""BasicInfo"" section and escalate issue with the CV company"
+QUERY_CONTAINER,2_13,LOCK_ABNORMAL,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause.
+
+Lock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated.
+
+The troubleshooting steps for this error code require a check for both HW and SW.
+
+1. Reboot cooler
+
+2. If error code persists, confirm the SW version. If the SW version is incorrect, take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
+a. After SW update, confirm in the Service UI ""BasicInfo"" section that the SW has been updated.
+
+3. If SW version is correct, confirm lock and lock signal functionality:
+a. Physically open the door by grabbing the handle
+b. If the lock is engaged, access the Service UI
+c. Tap ""Operation"", tap ""Open Door""
+d. If the lock disengages, the lock is functional
+
+4. If SW version is correct, confirm lock cable:
+a. Turn off the cooler
+b. Open the control box by remove the control box cover
+c. Using the electrical diagram found on the cover and the PC sticker as guides, locate the cable for the ""LOCK""
+d. Physically confirm that the connector is securely plugged to the Jupiter. Securely tighten as necessary
+e. If connections are secure, the result for this item is PASS
+f. If any portion of the cable assembly is damaged, replace cable assembly
+
+5. If SW version is correct, confirm RFID pairing:
+a. Access FQC App
+b. Confirm RFID pairing
+c. If the RFID pairing between the reader and tag are similar, the RFID pairing is correct, the result for this item is PASS
+d. If the RFID pairing between the reader and tag are dissimilar, contact the CV company
+e. After RFID re-pairing, repeat step 3
+
+Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, further troubleshooting is needed"
+OPEN_LOCK,3_02,MACHINE_IS_IN_USE,"Check if the cooler shopping cart is present in the CCR. If the CCR is stuck in the shopping cart, reboot the cooler. If system persists, contact CV company"
+OPEN_LOCK,3_03,OPEN_LOCK_FAIL_TIMEOUT,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause.
+
+Lock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated.
+
+The troubleshooting steps for this error code require a check for both HW and SW.
+
+1. Reboot cooler
+
+2. If error code persists, confirm the SW version. If the SW version is incorrect, take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
+a. After SW update, confirm in the Service UI ""BasicInfo"" section that the SW has been updated.
+
+3. If SW version is correct, confirm lock and lock signal functionality:
+a. Physically open the door by grabbing the handle
+b. If the lock is engaged, access the Service UI
+c. Tap ""Operation"", tap ""Open Door""
+d. If the lock disengages, the lock is functional
+
+4. If SW version is correct, confirm lock cable:
+a. Turn off the cooler
+b. Open the control box by remove the control box cover
+c. Using the electrical diagram found on the cover and the PC sticker as guides, locate the cable for the ""LOCK""
+d. Physically confirm that the connector is securely plugged to the Jupiter. Securely tighten as necessary
+e. If connections are secure, the result for this item is PASS
+f. If any portion of the cable assembly is damaged, replace cable assembly
+
+5. If SW version is correct, confirm RFID pairing:
+a. Access FQC App
+b. Confirm RFID pairing
+c. If the RFID pairing between the reader and tag are similar, the RFID pairing is correct, the result for this item is PASS
+d. If the RFID pairing between the reader and tag are dissimilar, contact the CV company
+e. After RFID re-pairing, repeat step 3
+
+Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, further troubleshooting is needed"
+OPEN_LOCK,3_04,ALGORITHM_FAILURE,"Algorithm failure means that the SW and CV versions are not as expected. Most likely, a SW update is needed. 
+
+1. Reboot cooler
+2. Confirm SW version and CV version
+3. Take a photo of the Service UI ""BasicInfo"" section and escalate issue with the CV company"
+OPEN_LOCK,3_05,OPEN_LOCK_FAIL_DEVICE_NOT_READY,CONTACT QUIKPICK TEAM
+OPEN_LOCK,3_06,Camera_obstructed,CONTACT QUIKPICK TEAM
+OPEN_LOCK,3_08,MACHINE_CLOSED,CONTACT QUIKPICK TEAM
+OPEN_LOCK,3_09,PC offline,CONTACT QUIKPICK TEAM
+OPEN_LOCK,3_10,ORDER_DUPLICATE,CONTACT QUIKPICK TEAM
+OPEN_LOCK,3_13,LOCK_ABNORMAL,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause.
+
+Lock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated.
+
+The troubleshooting steps for this error code require a check for both HW and SW.
+
+1. Reboot cooler
+
+2. If error code persists, confirm the SW version. If the SW version is incorrect, take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
+a. After SW update, confirm in the Service UI ""BasicInfo"" section that the SW has been updated.
+
+3. If SW version is correct, confirm lock and lock signal functionality:
+a. Physically open the door by grabbing the handle
+b. If the lock is engaged, access the Service UI
+c. Tap ""Operation"", tap ""Open Door""
+d. If the lock disengages, the lock is functional
+
+4. If SW version is correct, confirm lock cable:
+a. Turn off the cooler
+b. Open the control box by remove the control box cover
+c. Using the electrical diagram found on the cover and the PC sticker as guides, locate the cable for the ""LOCK""
+d. Physically confirm that the connector is securely plugged to the Jupiter. Securely tighten as necessary
+e. If connections are secure, the result for this item is PASS
+f. If any portion of the cable assembly is damaged, replace cable assembly
+
+5. If SW version is correct, confirm RFID pairing:
+a. Access FQC App
+b. Confirm RFID pairing
+c. If the RFID pairing between the reader and tag are similar, the RFID pairing is correct, the result for this item is PASS
+d. If the RFID pairing between the reader and tag are dissimilar, contact the CV company
+e. After RFID re-pairing, repeat step 3
+
+Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, further troubleshooting is needed"
+OPEN_LOCK,3_14,OPEN_LOCK_FAIL_PRODUCT_NOT_COLLECTED,CONTACT QUIKPICK TEAM
+OPEN_LOCK,3_15,ALGO_FAILURE,CONTACT QUIKPICK TEAM
+OPEN_LOCK,3_16-3_18,Camera_abnormal,CONTACT QUIKPICK TEAM
+OPEN_LOCK,3_19,LOCK_ISSUE,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause.
+
+Lock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated.
+
+The troubleshooting steps for this error code require a check for both HW and SW.
+
+1. Reboot cooler
+
+2. If error code persists, confirm the SW version. If the SW version is incorrect, take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
+a. After SW update, confirm in the Service UI ""BasicInfo"" section that the SW has been updated.
+
+3. If SW version is correct, confirm lock and lock signal functionality:
+a. Physically open the door by grabbing the handle
+b. If the lock is engaged, access the Service UI
+c. Tap ""Operation"", tap ""Open Door""
+d. If the lock disengages, the lock is functional
+
+4. If SW version is correct, confirm lock cable:
+a. Turn off the cooler
+b. Open the control box by remove the control box cover
+c. Using the electrical diagram found on the cover and the PC sticker as guides, locate the cable for the ""LOCK""
+d. Physically confirm that the connector is securely plugged to the Jupiter. Securely tighten as necessary
+e. If connections are secure, the result for this item is PASS
+f. If any portion of the cable assembly is damaged, replace cable assembly
+
+5. If SW version is correct, confirm RFID pairing:
+a. Access FQC App
+b. Confirm RFID pairing
+c. If the RFID pairing between the reader and tag are similar, the RFID pairing is correct, the result for this item is PASS
+d. If the RFID pairing between the reader and tag are dissimilar, contact the CV company
+e. After RFID re-pairing, repeat step 3
+
+Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, further troubleshooting is needed"
+OPEN_LOCK,3_20,NO PRODUCT ON SALE,CONTACT QUIKPICK TEAM
+OPEN_LOCK,3_22,ORDER_ISSUE,CONTACT QUIKPICK TEAM
+IN_MAINTENANCE,4_1,JUPITER_OFFLINE,CONTACT QUIKPICK TEAM
+IN_MAINTENANCE,4_3,OPENING_OVERTIME,CONTACT QUIKPICK TEAM
+IN_MAINTENANCE,4_4,LOCK_ABNORMAL,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause.
+
+Lock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated.
+
+The troubleshooting steps for this error code require a check for both HW and SW.
+
+1. Reboot cooler
+
+2. If error code persists, confirm the SW version. If the SW version is incorrect, take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
+a. After SW update, confirm in the Service UI ""BasicInfo"" section that the SW has been updated.
+
+3. If SW version is correct, confirm lock and lock signal functionality:
+a. Physically open the door by grabbing the handle
+b. If the lock is engaged, access the Service UI
+c. Tap ""Operation"", tap ""Open Door""
+d. If the lock disengages, the lock is functional
+
+4. If SW version is correct, confirm lock cable:
+a. Turn off the cooler
+b. Open the control box by remove the control box cover
+c. Using the electrical diagram found on the cover and the PC sticker as guides, locate the cable for the ""LOCK""
+d. Physically confirm that the connector is securely plugged to the Jupiter. Securely tighten as necessary
+e. If connections are secure, the result for this item is PASS
+f. If any portion of the cable assembly is damaged, replace cable assembly
+
+5. If SW version is correct, confirm RFID pairing:
+a. Access FQC App
+b. Confirm RFID pairing
+c. If the RFID pairing between the reader and tag are similar, the RFID pairing is correct, the result for this item is PASS
+d. If the RFID pairing between the reader and tag are dissimilar, contact the CV company
+e. After RFID re-pairing, repeat step 3
+
+Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, further troubleshooting is needed"
+IN_MAINTENANCE,4_5,Camera_obstructed,CONTACT QUIKPICK TEAM
+IN_MAINTENANCE,4_6,CAMERA_OFFLINE,CONTACT QUIKPICK TEAM
+IN_MAINTENANCE,4_7,JUPITER_WEAK_NETWORK,CONTACT QUIKPICK TEAM
+IN_MAINTENANCE,4_22,CAMERA_ISSUE,CONTACT QUIKPICK TEAM
+IN_MAINTENANCE,4_28,LOCK_ISSUE,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause.
+
+Lock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated.
+
+The troubleshooting steps for this error code require a check for both HW and SW.
+
+1. Reboot cooler
+
+2. If error code persists, confirm the SW version. If the SW version is incorrect, take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
+a. After SW update, confirm in the Service UI ""BasicInfo"" section that the SW has been updated.
+
+3. If SW version is correct, confirm lock and lock signal functionality:
+a. Physically open the door by grabbing the handle
+b. If the lock is engaged, access the Service UI
+c. Tap ""Operation"", tap ""Open Door""
+d. If the lock disengages, the lock is functional
+
+4. If SW version is correct, confirm lock cable:
+a. Turn off the cooler
+b. Open the control box by remove the control box cover
+c. Using the electrical diagram found on the cover and the PC sticker as guides, locate the cable for the ""LOCK""
+d. Physically confirm that the connector is securely plugged to the Jupiter. Securely tighten as necessary
+e. If connections are secure, the result for this item is PASS
+f. If any portion of the cable assembly is damaged, replace cable assembly
+
+5. If SW version is correct, confirm RFID pairing:
+a. Access FQC App
+b. Confirm RFID pairing
+c. If the RFID pairing between the reader and tag are similar, the RFID pairing is correct, the result for this item is PASS
+d. If the RFID pairing between the reader and tag are dissimilar, contact the CV company
+e. After RFID re-pairing, repeat step 3
+
+Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, further troubleshooting is needed"
+IN_MAINTENANCE,4_29,CAMERA_LOW_FRAMERATE,CONTACT QUIKPICK TEAM
+IN_MAINTENANCE,4_30-4_32,LOCK_ISSUE,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause.
+
+Lock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated.
+
+The troubleshooting steps for this error code require a check for both HW and SW.
+
+1. Reboot cooler
+
+2. If error code persists, confirm the SW version. If the SW version is incorrect, take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
+a. After SW update, confirm in the Service UI ""BasicInfo"" section that the SW has been updated.
+
+3. If SW version is correct, confirm lock and lock signal functionality:
+a. Physically open the door by grabbing the handle
+b. If the lock is engaged, access the Service UI
+c. Tap ""Operation"", tap ""Open Door""
+d. If the lock disengages, the lock is functional
+
+4. If SW version is correct, confirm lock cable:
+a. Turn off the cooler
+b. Open the control box by remove the control box cover
+c. Using the electrical diagram found on the cover and the PC sticker as guides, locate the cable for the ""LOCK""
+d. Physically confirm that the connector is securely plugged to the Jupiter. Securely tighten as necessary
+e. If connections are secure, the result for this item is PASS
+f. If any portion of the cable assembly is damaged, replace cable assembly
+
+5. If SW version is correct, confirm RFID pairing:
+a. Access FQC App
+b. Confirm RFID pairing
+c. If the RFID pairing between the reader and tag are similar, the RFID pairing is correct, the result for this item is PASS
+d. If the RFID pairing between the reader and tag are dissimilar, contact the CV company
+e. After RFID re-pairing, repeat step 3
+
+Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, further troubleshooting is needed"
+IN_MAINTENANCE,,,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause.
+
+Lock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated.
+
+The troubleshooting steps for this error code require a check for both HW and SW.
+
+1. Reboot cooler
+
+2. If error code persists, confirm the SW version. If the SW version is incorrect, take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
+a. After SW update, confirm in the Service UI ""BasicInfo"" section that the SW has been updated.
+
+3. If SW version is correct, confirm lock and lock signal functionality:
+a. Physically open the door by grabbing the handle
+b. If the lock is engaged, access the Service UI
+c. Tap ""Operation"", tap ""Open Door""
+d. If the lock disengages, the lock is functional
+
+4. If SW version is correct, confirm lock cable:
+a. Turn off the cooler
+b. Open the control box by remove the control box cover
+c. Using the electrical diagram found on the cover and the PC sticker as guides, locate the cable for the ""LOCK""
+d. Physically confirm that the connector is securely plugged to the Jupiter. Securely tighten as necessary
+e. If connections are secure, the result for this item is PASS
+f. If any portion of the cable assembly is damaged, replace cable assembly
+
+5. If SW version is correct, confirm RFID pairing:
+a. Access FQC App
+b. Confirm RFID pairing
+c. If the RFID pairing between the reader and tag are similar, the RFID pairing is correct, the result for this item is PASS
+d. If the RFID pairing between the reader and tag are dissimilar, contact the CV company
+e. After RFID re-pairing, repeat step 3
+
+Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, further troubleshooting is needed"
+IN_MAINTENANCE,,,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause.
+
+Lock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated.
+
+The troubleshooting steps for this error code require a check for both HW and SW.
+
+1. Reboot cooler
+
+2. If error code persists, confirm the SW version. If the SW version is incorrect, take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
+a. After SW update, confirm in the Service UI ""BasicInfo"" section that the SW has been updated.
+
+3. If SW version is correct, confirm lock and lock signal functionality:
+a. Physically open the door by grabbing the handle
+b. If the lock is engaged, access the Service UI
+c. Tap ""Operation"", tap ""Open Door""
+d. If the lock disengages, the lock is functional
+
+4. If SW version is correct, confirm lock cable:
+a. Turn off the cooler
+b. Open the control box by remove the control box cover
+c. Using the electrical diagram found on the cover and the PC sticker as guides, locate the cable for the ""LOCK""
+d. Physically confirm that the connector is securely plugged to the Jupiter. Securely tighten as necessary
+e. If connections are secure, the result for this item is PASS
+f. If any portion of the cable assembly is damaged, replace cable assembly
+
+5. If SW version is correct, confirm RFID pairing:
+a. Access FQC App
+b. Confirm RFID pairing
+c. If the RFID pairing between the reader and tag are similar, the RFID pairing is correct, the result for this item is PASS
+d. If the RFID pairing between the reader and tag are dissimilar, contact the CV company
+e. After RFID re-pairing, repeat step 3
+
+Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, further troubleshooting is needed"
+IN_MAINTENANCE,4_34,MACHINE LOCKED,CONTACT QUIKPICK TEAM
+PREAUTH_AMOUNT_ERROR,5_01,PREAUTH_AMOUNT_ERROR,CONTACT QUIKPICK TEAM
+CREDENTIALS_EMPTY_CODE,5_02,CREDENTIALS_EMPTY,CONTACT QUIKPICK TEAM
+CREDENTIALS_INVALID_CODE,5_03,CREDENTIALS_INVALID,CONTACT QUIKPICK TEAM
+POS_NETWORK_ERROR,6_01,POS_NETWORK_ERROR,CONTACT QUIKPICK TEAM
+WEBSOCKET_DISCONNECTED,6_02,WEBSOCKET_DISCONNECTED,CONTACT QUIKPICK TEAM
+SELF_CHECKING,7_01,CHECKING,CONTACT QUIKPICK TEAM
