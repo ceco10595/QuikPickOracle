@@ -1,6 +1,4 @@
 [theme]
 base="light"
 primaryColor = "#005CB4"       
-backgroundColor = "#FFFFFF"
-textColor = "#333333"
 font="sans serif"

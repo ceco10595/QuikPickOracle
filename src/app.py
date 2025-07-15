@@ -16,9 +16,13 @@ from llama_cpp import Llama
 from prompt_templates import SYSTEM_TEMPLATE, build_prompt
 from feedback_db import save as save_feedback          
 from feedback_db import _append_positive, _append_negative  
-from rapidfuzz import fuzz, process   # pip install rapidfuzz
+from rapidfuzz import fuzz, process 
+from streamlit_feedback import streamlit_feedback
 st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
-logo = Image.open("src/new-Pepsi-logo-png.png")
+st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
+st.session_state.setdefault("pending_q", None)
+st.session_state.setdefault("is_thinking", False)
+logo = Image.open("images/QuikPick.png")
 
 # set the small icon in the browser tab / window
 st.set_page_config(
@@ -65,7 +69,22 @@ store    = load_store()
 embedder = load_embedder()
 
 # ── HELPERS ─────────────────────────────────────────────────────────────────
-# helpers.py  (or drop it near the top of app.py)
+# helpers.py  
+def click_fup(q: str):
+    st.session_state.next_q = q
+
+
+def count_similar_questions(q: str, questions: List[str], threshold: int = 90) -> int:
+    """
+    Returns how many strings in `questions` have a token_set_ratio ≥ threshold
+    when compared to q.
+    """
+    return sum(
+        1
+        for prev in questions
+        if fuzz.token_set_ratio(q, prev) >= threshold
+    )
+
 QA_PATH = Path("data/sample_qa.csv")
 
 def append_qa_if_new(code: str, question: str, answer: str) -> None:
@@ -111,12 +130,12 @@ def docs_for_code(code: str) -> List[Dict[str, Any]]:
     return docs
 
 def retrieve_similar(q: str, docs: list[dict], k: int = 3) -> list[dict]:
-    # 1️⃣  fuzzy QA match first
+    # 1  fuzzy QA match first
     qa_hit = best_qa_match(q, docs, min_score=90)
     if qa_hit:
         return [qa_hit]                       # give the “gold” answer only
 
-    # 2️⃣  otherwise fall back to embedding similarity
+    # 2 otherwise fall back to embedding similarity
     q_vec = embedder.encode([q])[0]
     scored = sorted(
         docs,
@@ -188,128 +207,166 @@ with st.expander("Error-code details", expanded=True):
         f"**Solution:** {main['meta']['Solution']}"
     )
 
-# 3) Show chat history (with PepsiCo logo avatar for assistant)
-for msg in st.session_state.history:
+# 3) Replay chat history AND inject feedback widgets
+for i, msg in enumerate(st.session_state.history):
     if isinstance(msg, HumanMessage):
-        # user messages get the default user icon
         st.chat_message("user").markdown(msg.content)
     else:
-        # assistant messages now carry your logo
-        st.chat_message("assistant", avatar=logo).markdown(msg.content)
+        with st.chat_message("assistant", avatar=logo):
+            st.markdown(msg.content)
+
+            # ensure meta exists (fallback with no follow‑ups)
+            if i not in st.session_state["assistant_meta"]:
+                st.session_state["assistant_meta"][i] = {
+                    "q": st.session_state.history[i-1].content,
+                    "a": msg.content,
+                    "fups": "",
+                }
+
+            meta      = st.session_state["assistant_meta"][i]
+            llm_fups  = meta.get("fups", "")
+
+            # a) LLM‑generated follow‑ups
+            if llm_fups:
+                st.divider()
+                #st.markdown("**LLM Suggested follow‑ups:**")
+                lines = [l for l in llm_fups.splitlines() if l.strip()][:3]
+                for j, line in enumerate(lines):
+                    q = line.lstrip("0123456789.- ").strip()
+                    if q:
+                        st.button(
+                            q,
+                            key=f"fup-{j}-{i}",
+                            on_click=click_fup,
+                            args=(q,),
+                        )
+
+            # b) canned Q&A follow‑ups
+            #canned = [
+            #    d["meta"]["Question"]
+            #    for d in st.session_state.docs
+            #    if d["meta"].get("IsQA")
+            #]
+            #if canned:
+            #    st.divider()
+            #    st.markdown("**Canned follow‑ups:**")
+            #    for j, q in enumerate(canned):
+            #        st.button(
+            #            q,
+            #            key=f"qa-{j}-{i}",
+            #            on_click=click_fup,
+            #            args=(q,),
+            #        )            
+            
+            # ── Unified feedback widget ──
+            widget_key   = f"fb_{i}"
+            persist_key  = f"fb_score_{i}"
+            prev_score   = st.session_state.get(persist_key)
+            disable_icon = None if prev_score is None else ("👍" if prev_score == 1 else "👎")
+
+            # Render the component and capture raw response dict
+            resp = streamlit_feedback(
+                feedback_type="thumbs",
+                optional_text_label="[Optional] Tell us more",
+                disable_with_score=disable_icon,
+                key=widget_key,
+                align="flex-end",
+            )
+
+            # On first non‑None resp, convert & save exactly once
+            if resp is not None and persist_key not in st.session_state:
+                raw_score = resp["score"]
+                # 1) try to cast directly (handles "1" or 0/1)
+                try:
+                    score = int(raw_score)
+                except (ValueError, TypeError):
+                    # 2) fallback: look for "+1" or "👍" in string
+                    s = str(raw_score)
+                    score = 1 if ("+1" in s or "👍" in s) else 0
+
+                text   = (resp.get("text") or "").strip()
+                rating = 5 if score == 1 else 1
+
+                # Persist to your DB
+                save_feedback(
+                    st.session_state.code,
+                    st.session_state["assistant_meta"][i]["q"],
+                    st.session_state["assistant_meta"][i]["a"],
+                    rating=rating,
+                    comment=text,
+                )
+                # For 👍 also append the canned QA
+                if score == 1:
+                    append_qa_if_new(
+                        st.session_state.code,
+                        st.session_state["assistant_meta"][i]["q"],
+                        st.session_state["assistant_meta"][i]["a"],
+                    )
+
+                # Remember the numeric score so disable_with_score works correctly next rerun
+                st.session_state[persist_key] = score
+                st.toast("Thanks for the feedback!")
 
 
-# follow-up helper
-def click_fup(q: str):
-    st.session_state.next_q = q
+# 4) New question or follow‑up input (OUTSIDE the for‑loop)
 
-# 4) New question or follow-up button
-# a) pull any queued follow-up
-follow = st.session_state.pop("next_q", None)
+# a) If a follow‑up button was clicked, stage it and lock input
+fup = st.session_state.pop("next_q", None)
+if fup:
+    st.session_state.pending_q   = fup
+    st.session_state.is_thinking = True
+    _rerun()
 
-# b) always show the chat_input widget
-typed  = st.chat_input("Ask a question …")
+# b) Show the input box, disabled if we’re “thinking”
+typed = st.chat_input(
+    "Ask a question …",
+    key="main_input",
+    disabled=st.session_state.is_thinking,
+)
+# If the user typed while not already pending, stage it
+if typed and st.session_state.pending_q is None:
+    st.session_state.pending_q   = typed
+    st.session_state.is_thinking = True
+    _rerun()
 
-# C) pick the follow-up if present, otherwise what the user typed
-user_q = follow or typed
+# c) If there’s a staged prompt, process it
+if st.session_state.pending_q:
+    user_q = st.session_state.pending_q
+    st.session_state.pending_q = None
 
-
-if user_q:
-    # record question
+    # record user message
     st.chat_message("user").write(user_q)
     st.session_state.history.append(HumanMessage(content=user_q))
 
-    # retrieve context
-    ctx = retrieve_similar(user_q, st.session_state.docs, k=3)
-    ctx_block = "\n\n".join(d["content"] for d in ctx)
-    ctx_docs = retrieve_similar(user_q, st.session_state.docs, k=3)
-
-    # build prompt (history w/o role-tokens)
-    if len(ctx_docs) == 1 and ctx_docs[0]["meta"].get("IsQA"):
-        main_ans = qa_answer(ctx_docs[0])      # <- pulls the “A: …” line
-        llm_fups = ""                          # no follow-ups for canned reply
-    else:
+    # ─ pull context, call LLM ─
+    with st.spinner("thinking…"):
+        ctx       = retrieve_similar(user_q, st.session_state.docs, k=3)
         ctx_block = "\n\n".join(d["content"] for d in ctx)
-        hist_txt = "\n".join(m.content for m in st.session_state.history[-MEM_TURNS:])
-        prompt = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
+        hist_txt  = "\n".join(m.content for m in st.session_state.history[-MEM_TURNS:])
+        prompt    = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
+        resp      = llm(prompt, max_tokens=MAX_TOKENS,
+                        temperature=0.2, top_p=0.95,
+                        stop=["<END>"])
+        raw       = resp["choices"][0]["text"].strip() # type: ignore
+        if "<END>" in raw:
+            raw = raw.split("<END>",1)[0].rstrip()
+        main_ans, llm_fups = (raw.split("### Follow-Up",1)+[""])[:2]
+        main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
 
-        # call LLM
-        with st.spinner("thinking…"):
-            try:
-                resp = llm(prompt, max_tokens=MAX_TOKENS, temperature=0.2, top_p=0.95)
-            except Exception as e:
-                st.exception(e)
-                st.stop()
+    # stash Q/A + follow‑ups for replay
+    mid = len(st.session_state.history)
+    st.session_state["assistant_meta"][mid] = {
+        "q":     user_q,
+        "a":     main_ans,
+        "fups":  llm_fups,
+    }
 
-            
-    raw = resp["choices"][0]["text"].strip() # type: ignore
-
-    # ─hard-stop at the sentinel
-    if "<END>" in raw:
-        raw = raw.split("<END>", 1)[0].rstrip()
-
-    if not raw:
-        st.error("⚠️"); st.stop()
-
-    # split out LLM’s follow-ups
-    main_ans, llm_fups = (raw.split("### Follow-Up", 1) + [""])[:2]
-    main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
-
-    # assistant bubble
-    with st.chat_message("assistant", avatar = logo): #avatar = logo
-        st.markdown(main_ans)
-
-        # a) LLM‐generated
-        if llm_fups:
-            st.divider()
-            st.markdown("**LLM Suggested follow-ups:**")
-            # only take the first 3 non‐empty lines
-            lines = [l for l in llm_fups.splitlines() if l.strip()][:3]
-            for i, line in enumerate(lines):
-                q = line.lstrip("0123456789.- ").strip()
-                if q:
-                    st.button(q, key=f"llm-{i}-{len(st.session_state.history)}",
-                              on_click=click_fup, args=(q,))
-
-        # b) canned Q&A
-        canned = [d["meta"]["Question"] for d in st.session_state.docs if d["meta"].get("IsQA")]
-        if canned:
-            st.divider()
-            st.markdown("**Canned follow-ups:**")
-            for i, q in enumerate(canned):
-                st.button(q, key=f"qa-{i}-{len(st.session_state.history)}",
-                          on_click=click_fup, args=(q,))
-
-        #c) Feedback Loop
-        def _thumbs_up(code, q, a, mid):
-            save_feedback(code, q, a, rating=5)
-            append_qa_if_new(code, q, a)
-            st.session_state[f"fb_done_{mid}"] = True
-
-        def _thumbs_down(code, q, a, mid):
-            st.session_state[f"show_cmt_{mid}"] = True
-
-        mid = len(st.session_state.history)
-
-        col_up, col_down = st.columns(2)
-        col_up.button("👍", key=f"up_{mid}",
-                    on_click=_thumbs_up,
-                    args=(st.session_state.code, user_q, main_ans, mid))
-
-        col_down.button("👎", key=f"down_{mid}",
-                        on_click=_thumbs_down,
-                        args=(st.session_state.code, user_q, main_ans, mid))
-
-        if st.session_state.get(f"show_cmt_{mid}", False):
-            txt = st.text_input("Describe the issue", key=f"cmt_{mid}")
-            if st.button("Submit", key=f"sub_{mid}") and txt.strip():
-                save_feedback(st.session_state.code, user_q, main_ans,
-                            rating=1, comment=txt.strip())
-                st.success("Thanks – feedback recorded!")
-
-
-
-    # save reply
+    # append AI reply
     st.session_state.history.append(AIMessage(content=main_ans))
+
+    # unlock input & rerun to redraw the enabled chat box
+    st.session_state.is_thinking = False
+    _rerun()
 
 for kind, payload in st.session_state.pop("to_log", []):
     if kind == "pos":

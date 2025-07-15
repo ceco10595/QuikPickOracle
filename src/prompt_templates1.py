@@ -38,7 +38,7 @@ CONTEXT:
 ────────────────
 {context}
 ────────────────
-
+ 
 User: {question}
 Assistant:
 """

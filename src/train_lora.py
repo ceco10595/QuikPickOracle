@@ -4,7 +4,7 @@ Produces: models/lora-adapter/
 """
 import sys, pathlib, csv
 from datasets import Dataset
-from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, Trainer  # type: ignore
+from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, Trainer 
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 
 BASE = "unsloth/llama-3-13b-instruct"    # base HF model (same family as GGUF)
