@@ -1,6 +1,6 @@
 __pycache__/
 .env
 *.egg-info/
-vectorstore/
+#vectorstore/
 models/
-feedback/
+#feedback/

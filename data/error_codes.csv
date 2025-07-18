@@ -48,31 +48,31 @@ The troubleshooting steps for this error code require a check for both HW and SW
 
 1. Reboot cooler
 
-2. If error code persists, confirm the SW version. If the SW version is incorrect, take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
+2. If error code persists, then confirm the SW version. If the SW version is incorrect, then take a photo of the Service UI ""BasicInfo"" section and contact CV company. 
 a. After SW update, confirm in the Service UI ""BasicInfo"" section that the SW has been updated.
 
-3. If SW version is correct, confirm lock and lock signal functionality:
+3. If SW version is correct, then confirm lock and lock signal functionality:
 a. Physically open the door by grabbing the handle
-b. If the lock is engaged, access the Service UI
+b. If the lock is engaged, then access the Service UI
 c. Tap ""Operation"", tap ""Open Door""
-d. If the lock disengages, the lock is functional
+d. If the lock disengages, then the lock is functional
 
-4. If SW version is correct, confirm lock cable:
+4. If SW version is correct, then confirm lock cable:
 a. Turn off the cooler
 b. Open the control box by remove the control box cover
 c. Using the electrical diagram found on the cover and the PC sticker as guides, locate the cable for the ""LOCK""
 d. Physically confirm that the connector is securely plugged to the Jupiter. Securely tighten as necessary
-e. If connections are secure, the result for this item is PASS
-f. If any portion of the cable assembly is damaged, replace cable assembly
+e. If connections are secure, then the result for this item is PASS
+f. If any portion of the cable assembly is damaged, then replace cable assembly
 
-5. If SW version is correct, confirm RFID pairing:
+5. If SW version is correct, then confirm RFID pairing:
 a. Access FQC App
 b. Confirm RFID pairing
-c. If the RFID pairing between the reader and tag are similar, the RFID pairing is correct, the result for this item is PASS
-d. If the RFID pairing between the reader and tag are dissimilar, contact the CV company
-e. After RFID re-pairing, repeat step 3
+c. If the RFID pairing between the reader and tag are similar, then the RFID pairing is correct, then the result for this item is PASS
+d. If the RFID pairing between the reader and tag are dissimilar, then contact the CV company
+e. After RFID re-pairing, then repeat step 3
 
-Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, further troubleshooting is needed"
+Cycle through steps 1 to 5 until each step passes. If all items PASS and error code persists, then further troubleshooting is needed"
 OPEN_LOCK,3_04,ALGORITHM_FAILURE,"Algorithm failure means that the SW and CV versions are not as expected. Most likely, a SW update is needed. 
 
 1. Reboot cooler

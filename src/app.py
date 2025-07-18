@@ -1,4 +1,5 @@
 # pyright: reportAttributeAccessIssue=false, reportArgumentType=false
+# src/app.py
 import re
 import csv
 from pathlib import Path
@@ -51,7 +52,7 @@ def load_llm():
     return Llama(
         model_path=MODEL_PATH,
         lora_adapter=LORA_PATH if Path(LORA_PATH).exists() else None,
-        n_ctx=4096,
+        n_ctx=8192,
         n_gpu_layers=-1,
         verbose=False,
     )
@@ -71,7 +72,14 @@ embedder = load_embedder()
 # ── HELPERS ─────────────────────────────────────────────────────────────────
 # helpers.py  
 def click_fup(q: str):
+    # if this q matches one of our canned step questions, advance the counter
+    for d in st.session_state.docs:
+        meta = d["meta"]
+        if meta.get("IsFollowUp") and meta.get("Question") == q:
+            st.session_state.step_counter += 1
+            break
     st.session_state.next_q = q
+
 
 
 def count_similar_questions(q: str, questions: List[str], threshold: int = 90) -> int:
@@ -116,17 +124,35 @@ def _rerun():
     else:
         st.experimental_rerun()
 
+# ── HELPERS ─────────────────────────────────────────────────────────────────
+QA_PATH = Path("data/sample_qa.csv")
+
 @st.cache_resource(show_spinner="Loading docs…")
 def docs_for_code(code: str) -> List[Dict[str, Any]]:
+    # 1) pull from your Chroma store
     res = store.get(
         where={"ErrorCode": code},
         include=["documents", "metadatas", "embeddings"],
     )
-    docs = []
+    docs: List[Dict[str,Any]] = []
     for d, m, e in zip(res["documents"], res["metadatas"], res["embeddings"]):
         if e is None:
             e = embedder.encode([d])[0]
         docs.append({"content": d, "meta": m, "embedding": e})
+
+    # 2) also pull in any saved Q&A for this code
+    if QA_PATH.exists():
+        reader = csv.DictReader(QA_PATH.open())
+        for row in reader:
+            if row["ErrorCode"] == code:
+                # store as a “canned” QA doc
+                docs.append({
+                    "content": f"Q: {row['Question']}\nA: {row['Answer']}",
+                    "meta": {"IsQA": True, "Question": row["Question"]},
+                    "embedding": embedder.encode([row["Question"]])[0]
+                })
+
+    st.write(f"🔍 Loaded {len(docs)} docs for error code {code}.")  # debug
     return docs
 
 def retrieve_similar(q: str, docs: list[dict], k: int = 3) -> list[dict]:
@@ -180,6 +206,7 @@ def qa_answer(doc: dict) -> str:
 st.session_state.setdefault("code",   None)
 st.session_state.setdefault("docs",   [])
 st.session_state.setdefault("history", [])
+st.session_state.setdefault("step_counter", 0) # canned follow ups (steps the user has clicked so far)
 
 # ── UI ───────────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="QuikPick Oracle", layout="centered")
@@ -206,8 +233,30 @@ with st.expander("Error-code details", expanded=True):
         f"**Message:** {main['meta']['Message']}  \n"
         f"**Solution:** {main['meta']['Solution']}"
     )
+# display the first step one of the error code
+if st.session_state.step_counter == 0:
+    # find the canned follow‑up for Step 1 of this code
+    first_fu = [
+        d for d in st.session_state.docs
+        if d["meta"].get("IsFollowUp")
+        and d["meta"]["ErrorCode"] == st.session_state.code
+        and d["meta"]["StepIndex"] == 1
+    ]
+    if first_fu:
+        q1 = first_fu[0]["meta"]["Question"]
+        st.button(
+            q1,
+            key="canned-init",
+            on_click=click_fup,
+            args=(q1,),
+        )
 
 # 3) Replay chat history AND inject feedback widgets
+# find the last assistant message so we only show follow‑ups there
+last_ai_idx = max(
+    (i for i, m in enumerate(st.session_state.history) if isinstance(m, AIMessage)),
+    default=None
+)
 for i, msg in enumerate(st.session_state.history):
     if isinstance(msg, HumanMessage):
         st.chat_message("user").markdown(msg.content)
@@ -226,8 +275,29 @@ for i, msg in enumerate(st.session_state.history):
             meta      = st.session_state["assistant_meta"][i]
             llm_fups  = meta.get("fups", "")
 
-            # a) LLM‑generated follow‑ups
-            if llm_fups:
+            # a) Step‑specific canned follow‑up 
+            # compute the next step number we haven’t yet served
+            next_step = st.session_state.step_counter + 1
+            # find any canned QA doc matching this code & step
+            canned = [
+                d for d in st.session_state.docs
+                if d["meta"].get("IsFollowUp")
+                and d["meta"]["ErrorCode"] == st.session_state.code
+                and d["meta"]["StepIndex"] == next_step
+            ]
+            if i == last_ai_idx and canned:
+                st.divider()
+                for j, doc in enumerate(canned):
+                    q = doc["meta"]["Question"]
+                    st.button(
+                        q,
+                        key=f"canned-{i}-{j}",
+                        on_click=click_fup,
+                        args=(q,),
+                    )
+
+            # b) LLM‑generated follow‑ups
+            if i == last_ai_idx and llm_fups:
                 st.divider()
                 #st.markdown("**LLM Suggested follow‑ups:**")
                 lines = [l for l in llm_fups.splitlines() if l.strip()][:3]
@@ -241,7 +311,7 @@ for i, msg in enumerate(st.session_state.history):
                             args=(q,),
                         )
 
-            # b) canned Q&A follow‑ups
+            # c) canned Q&A follow‑ups
             #canned = [
             #    d["meta"]["Question"]
             #    for d in st.session_state.docs
@@ -302,6 +372,12 @@ for i, msg in enumerate(st.session_state.history):
                         st.session_state["assistant_meta"][i]["q"],
                         st.session_state["assistant_meta"][i]["a"],
                     )
+                    _append_negative(
+                        st.session_state.code,
+                        st.session_state["assistant_meta"][i]["q"],
+                        st.session_state["assistant_meta"][i]["a"],
+                        text or "<no comment>",
+                    )
 
                 # Remember the numeric score so disable_with_score works correctly next rerun
                 st.session_state[persist_key] = score
@@ -334,24 +410,80 @@ if st.session_state.pending_q:
     user_q = st.session_state.pending_q
     st.session_state.pending_q = None
 
-    # record user message
+    # 1) ALWAYS show the user’s question as a chat bubble
     st.chat_message("user").write(user_q)
     st.session_state.history.append(HumanMessage(content=user_q))
 
-    # ─ pull context, call LLM ─
-    with st.spinner("thinking…"):
-        ctx       = retrieve_similar(user_q, st.session_state.docs, k=3)
-        ctx_block = "\n\n".join(d["content"] for d in ctx)
-        hist_txt  = "\n".join(m.content for m in st.session_state.history[-MEM_TURNS:])
-        prompt    = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
-        resp      = llm(prompt, max_tokens=MAX_TOKENS,
-                        temperature=0.2, top_p=0.95,
-                        stop=["<END>"])
-        raw       = resp["choices"][0]["text"].strip() # type: ignore
+    # 2) Check if it’s one of our canned follow‑ups
+    canned = next(
+        (
+            d for d in st.session_state.docs
+            if d["meta"].get("IsFollowUp")
+            and d["meta"]["Question"] == user_q
+        ),
+        None
+    )
+    # 3) If it’s canned, show it and return immediately
+    if canned:
+        answer = canned["meta"]["Answer"].strip('"').strip("'")
+        st.chat_message("assistant", avatar=logo).markdown(answer)
+        st.session_state.history.append(AIMessage(content=answer))
+        st.session_state.is_thinking = False
+        _rerun()
+
+    # ── fuzzy-repeat check goes here ──
+    past_qs = [
+        m.content
+        for m in st.session_state.history
+        if isinstance(m, HumanMessage)
+    ]
+    # count how many past questions look like this one
+    repeat_count = count_similar_questions(user_q, past_qs, threshold=90)
+    # if they’ve asked “the same” >3 times, escalate
+    if repeat_count > 2:
+        st.session_state.history.append(
+            AIMessage(content="Contact QuikPick support staff at (123) 456-7890")
+        )
+        # clear the “thinking” flag so we don’t lock the input
+        st.session_state.is_thinking = False
+        _rerun()
+
+    # ── pull context, call LLM ──
+    with st.spinner("Thinking…"):
+        # 1) always grab the main error-code doc
+        main_doc = next(
+            d for d in st.session_state.docs
+            if d["meta"].get("ErrorCode") == st.session_state.code
+               and "Message" in d["meta"]
+        )
+
+        # 2) get the top-(k-1) most similar others
+        sim_docs = retrieve_similar(user_q, st.session_state.docs, k=3)
+        # drop main_doc if it snuck in
+        sim_docs = [d for d in sim_docs if d is not main_doc]
+
+        # 3) assemble final ctx_docs list
+        ctx_docs = [main_doc] + sim_docs[:2]    # total length = 3
+
+        # 4) build the prompt from exactly those
+        ctx_block = "\n\n".join(d["content"] for d in ctx_docs)
+        hist_txt  = "\n".join(
+            m.content for m in st.session_state.history[-MEM_TURNS:]
+        )
+        prompt = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
+        resp   = llm(
+            prompt,
+            max_tokens=MAX_TOKENS,
+            temperature=0.2,
+            top_p=0.95,
+            stop=["<END>"],
+        )
+        raw    = resp["choices"][0]["text"].strip()  # type: ignore
         if "<END>" in raw:
-            raw = raw.split("<END>",1)[0].rstrip()
-        main_ans, llm_fups = (raw.split("### Follow-Up",1)+[""])[:2]
-        main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
+            raw = raw.split("<END>", 1)[0].rstrip()
+
+    main_ans, llm_fups = (raw.split("### Follow-Up", 1) + [""])[:2]
+    main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
 
     # stash Q/A + follow‑ups for replay
     mid = len(st.session_state.history)

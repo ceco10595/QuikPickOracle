@@ -1,4 +1,4 @@
-# feedback_db.py
+# src/feedback_db.py
 from pathlib import Path
 import sqlite3, time, threading
 
@@ -50,5 +50,6 @@ def _append_negative(code: str, q: str, a: str, fb: str):
         "response": a.strip(),
         "feedback": fb.strip() or "<no comment>",
     }
+    print("Appending negative feedback:", payload)  # <--- Add this line
     with _LOCK, _EXTRA_NEG.open("a") as f:
         f.write(json.dumps(payload, ensure_ascii=False) + "\n")

@@ -1,61 +1,133 @@
 """
-Ingest • error_codes.csv  (required)
-      • sample_qa.csv     (optional)
+Ingest troubleshooting CSV files into a Chroma vector‑store.
 
-Usage:
-    python src/ingest.py  data/error_codes.csv  [data/sample_qa.csv]
+Usage
+-----
+    python src/ingest.py data/error_codes.csv [data/steps.csv] [data/sample_qa.csv]
+
+* error_codes.csv   (required) columns: ErrorCode, Message, Solution
+* steps.csv         (optional) columns: ErrorCode, step, Question, Answer
+* sample_qa.csv     (optional) columns: ErrorCode, Question, Answer
 """
-import sys, pathlib
+import sys
+import pathlib
+
+import numpy as np
 import pandas as pd
 from chromadb import PersistentClient
 from sentence_transformers import SentenceTransformer
 
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-CHROMA_DIR  = "vectorstore"
+VECTOR_DIR  = "vectorstore"
 COLL_NAME   = "errors"
 
-def embed(texts):
+
+def _embed(texts):
+    """Encode a list of strings to a float32 NumPy array."""
     model = SentenceTransformer(EMBED_MODEL, device="mps")
-    return model.encode(texts, batch_size=64, show_progress_bar=True)
+    embs = model.encode(texts, batch_size=64, show_progress_bar=True)
+    return np.array(embs, dtype=np.float32)
 
-def normalise_codes(df: pd.DataFrame) -> pd.DataFrame:
-    rename = {"Error Code":"ErrorCode", "Error Message":"Message"}
-    return df.rename(columns=rename).fillna("")
 
-def ingest(code_csv: pathlib.Path, qa_csv: pathlib.Path | None = None):
-    # ── load & format ────────────────────────────────────────────────────────
-    code_df = normalise_codes(pd.read_csv(code_csv))
-    code_docs = code_df.apply(
-        lambda r: f"Error Code: {r['ErrorCode']}\nMessage: {r['Message']}\n"
-                  f"Solution: {r['Solution']}", axis=1).tolist()
+def ingest(code_csv, steps_csv=None, qa_csv=None):
+    # 1) Load full “Solution” entries
+    df_code = pd.read_csv(code_csv).fillna("")
+    if not {"ErrorCode", "Message", "Solution"}.issubset(df_code.columns):
+        sys.exit(f"{code_csv} must contain ErrorCode, Message, Solution columns")
 
-    if qa_csv and qa_csv.exists():
-        qa_df = pd.read_csv(qa_csv)[["ErrorCode","Question","Answer"]].fillna("")
-        qa_docs = qa_df.apply(lambda r: f"Q: {r['Question']}\nA: {r['Answer']}",
-                              axis=1).tolist()
-    else:
-        qa_df, qa_docs = pd.DataFrame(), []
+    code_texts = df_code["Solution"].tolist()
+    code_embs  = _embed(code_texts)
+    code_meta  = df_code[["ErrorCode", "Message", "Solution"]].to_dict("records")
 
-    # ── embed ───────────────────────────────────────────────────────────────
-    vec_code = embed(code_docs)
-    vec_qa   = embed(qa_docs) if qa_docs else []
+    # 2) Load your hand‑written steps.csv (Q/A follow‑ups)
+    step_texts = []
+    step_meta  = []
+    step_embs  = None
+    if steps_csv and pathlib.Path(steps_csv).exists():
+        df_steps = pd.read_csv(steps_csv).fillna("")
+        if not {"ErrorCode", "step", "Question", "Answer"}.issubset(df_steps.columns):
+            sys.exit(f"{steps_csv} must contain ErrorCode, step, Question, Answer columns")
 
-    # ── store ───────────────────────────────────────────────────────────────
-    client = PersistentClient(path=CHROMA_DIR)
-    col = client.get_or_create_collection(COLL_NAME)
+        for row in df_steps.itertuples(index=False):
+            q  = row.Question
+            a  = row.Answer
+            step_texts.append(f"Q: {q}\nA: {a}")
+            step_meta.append({
+                "ErrorCode": row.ErrorCode,
+                "StepIndex": int(row.step),
+                "Question":  q,
+                "Answer":    a,
+                "IsFollowUp": True,
+            })
 
-    col.add(ids=[f"code-{i}" for i in range(len(code_docs))],
-            documents=code_docs, embeddings=vec_code,
-            metadatas=code_df.to_dict("records"))
+        step_embs = _embed(step_texts)
 
-    if qa_docs:
-        col.add(ids=[f"qa-{i}" for i in range(len(qa_docs))],
-                documents=qa_docs, embeddings=vec_qa,
-                metadatas=qa_df.assign(IsQA=True).to_dict("records"))
+    # 3) Load optional sample_qa.csv
+    qa_texts = []
+    qa_meta  = []
+    qa_embs  = None
+    if qa_csv and pathlib.Path(qa_csv).exists():
+        df_qa = pd.read_csv(qa_csv).fillna("")
+        if not {"ErrorCode", "Question", "Answer"}.issubset(df_qa.columns):
+            sys.exit(f"{qa_csv} must contain ErrorCode, Question, Answer columns")
 
-    print(f"✅ Indexed {len(code_docs)} codes + {len(qa_docs)} QAs")
+        for row in df_qa.itertuples(index=False):
+            q = row.Question
+            a = row.Answer
+            qa_texts.append(f"Q: {q}\nA: {a}")
+            qa_meta.append({
+                "ErrorCode": row.ErrorCode,
+                "Question":  q,
+                "Answer":    a,
+                "IsQA":      True,
+            })
+
+        qa_embs = _embed(qa_texts)
+
+    # 4) Push everything into Chroma
+    client = PersistentClient(path=VECTOR_DIR)
+    col    = client.get_or_create_collection(COLL_NAME)
+
+    # a) full Solutions
+    col.add(
+        ids        = [f"code-{i}" for i in range(len(code_texts))],
+        documents  = code_texts,
+        embeddings = code_embs,    # type: ignore[arg-type]
+        metadatas  = code_meta,    # type: ignore[arg-type]
+    )
+
+    # b) steps follow‑ups
+    if step_texts:
+        col.add(
+            ids        = [f"step-{i}" for i in range(len(step_texts))],
+            documents  = step_texts,
+            embeddings = step_embs,   # type: ignore[arg-type]
+            metadatas  = step_meta,   # type: ignore[arg-type]
+        )
+
+    # c) sample QA
+    if qa_texts:
+        col.add(
+            ids        = [f"qa-{i}" for i in range(len(qa_texts))],
+            documents  = qa_texts,
+            embeddings = qa_embs,     # type: ignore[arg-type]
+            metadatas  = qa_meta,     # type: ignore[arg-type]
+        )
+
+    print(
+        f"✅ Indexed {len(code_texts)} Solutions"
+        + (f", {len(step_texts)} follow‑ups" if step_texts else "")
+        + (f", {len(qa_texts)} QA pairs" if qa_texts else "")
+    )
+
 
 if __name__ == "__main__":
-    code_csv = pathlib.Path(sys.argv[1])
-    qa_csv   = pathlib.Path(sys.argv[2]) if len(sys.argv) > 2 else None
-    ingest(code_csv, qa_csv)
+    if len(sys.argv) < 2:
+        print(__doc__)
+        sys.exit(1)
+
+    code_csv  = pathlib.Path(sys.argv[1])
+    steps_csv = pathlib.Path(sys.argv[2]) if len(sys.argv) > 2 else None
+    qa_csv    = pathlib.Path(sys.argv[3]) if len(sys.argv) > 3 else None
+    ingest(code_csv, steps_csv, qa_csv)
+

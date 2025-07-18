@@ -1,9 +1,9 @@
 ErrorCode,Question,Answer
 
-*,How do I reboot the cooler from the GFCI?,"Press the GFCI’s RESET button, unplug and re-plug the mains cord, then open the Service UI → “Reboot” dialog. :contentReference[oaicite:13]{index=13}"
-*,What’s the unit’s capacity and footprint?,"This Gen-2 QuikPick (IDW G-28) holds 336×20 oz SKUs in a 30.4״ × 36.3״ × 81.6״ chassis. :contentReference[oaicite:14]{index=14}"
-*,How do I contact QuickPick support?,"Call 1-800-QUIKPICK to report any hardware or software issues. :contentReference[oaicite:15]{index=15}"
-*,What packaging do I need for relocating a unit?,"Use a G-28-Q pallet, poly bag, carton topper, edge protectors (Uline S-15205, S-6062, S-2459, S-2458), foam pads (S-8339), shrink wrap, and straps. :contentReference[oaicite:16]{index=16}"
+*,How do I reboot the cooler from the GFCI?,"Press the GFCI’s RESET button, unplug and re-plug the mains cord, then open the Service UI → “Reboot” dialog."
+*,What’s the unit’s capacity and footprint?,"This Gen-2 QuikPick (IDW G-28) holds 336×20 oz SKUs in a 30.4״ × 36.3״ × 81.6״ chassis."
+*,How do I contact QuickPick support?,"Call 1-800-QUIKPICK to report any hardware or software issues."
+*,What packaging do I need for relocating a unit?,"Use a G-28-Q pallet, poly bag, carton topper, edge protectors (Uline S-15205, S-6062, S-2459, S-2458), foam pads (S-8339), shrink wrap, and straps."
 
 2_2,What does MACHINE_IS_IN_USE mean?,"Error code 2_2 indicates that a shopping cart is still detected in the Cart Recognition Area (CCR), so the kiosk will not accept new commands until the cart is cleared."
 2_2,How do I check if the cart is present?,"Open the Service UI, tap the QuikPick logo 10 times to unlock maintenance mode, select “Cart Status,” and verify whether the “Cart Present” indicator is on."
@@ -35,6 +35,10 @@ ErrorCode,Question,Answer
 3_03,What if the timeout still occurs?,"Perform a full reboot: press GFCI RESET, unplug/replug the AC cord, then use the UI reboot command or the physical switch behind the grill."
 3_03,Where are lock timeout logs?,"Lock operation timeouts are logged in `/var/log/vision/lock_timeout.log`; download via Admin → Logs for analysis."
 3_03, How do I reboot the cooler?,"Press the GFCI’s RESET button, unplug and re-plug the mains cord, then open the Service UI → “Reboot” dialog."
+3_03,How do I reboot the cooler from the GFCI?,"Press the GFCI’s RESET button, unplug and re-plug the mains cord, then open the Service UI → “Reboot” dialog."
+3_03,What’s the unit’s capacity and footprint?,"This Gen-2 QuikPick (IDW G-28) holds 336×20 oz SKUs in a 30.4״ × 36.3״ × 81.6״ chassis."
+3_03,How do I contact QuickPick support?,"Call 1-800-QUIKPICK to report any hardware or software issues."
+3_03,What packaging do I need for relocating a unit?,"Use a G-28-Q pallet, poly bag, carton topper, edge protectors (Uline S-15205, S-6062, S-2459, S-2458), foam pads (S-8339), shrink wrap, and straps."
 
 3_06,What does POWER_FAILURE mean?,"Error code 3_06 signals an unexpected AC power loss detected by the kiosk’s internal power‐monitor circuit."
 3_06,How do I check the power supply?,"Ensure the kiosk is plugged into a 110 V 60 Hz outlet, press RESET on the GFCI, then toggle the front switch (behind the grill) OFF→ON."
@@ -60,10 +64,10 @@ ErrorCode,Question,Answer
 3_09,Where can I find PC system logs?,"System logs live in `/var/log/system/journal/`; use Admin → Logs → Download System Logs to fetch the most recent boot and error entries."
 3_09,What if the PC stays offline after reboot?,"If it fails to reconnect, reseat the SATA and power cables in the control box, verify the board’s health LEDs, and escalate by calling 1-800-QUIKPICK."
 
-2_2,How do I perform a full CV validation after clearing the cart?,"After ejecting the cart and closing the door, run 36 test vends: for each SKU, open the door once and return once at the red-marked locations. A pass is ≥29/30 correct detections. If below 97%, repeat 3–5 more vends or log a red-line adjustment ticket with CV Company. :contentReference[oaicite:9]{index=9}"
-2_4,How do I enter Service-UI admin mode?,"Tap the PepsiCo (QuikPick) logo 10× in the upper-left corner, then enter your password on the credentials dialog. :contentReference[oaicite:10]{index=10}"
-2_13,What’s the manual override procedure if the lock motor fails?,"Insert the barrel key into the T-Handle lock, rotate clockwise, then pull the door open. After service, return the T-Handle to vertical and remove the key. :contentReference[oaicite:11]{index=11}"
-3_03,What are the steps to replace the door-sensor assembly?,"Unplug the cooler (GFCI), remove the front grill, disconnect the sensor’s logic cable, unscrew its two Philips screws, replace the sensor, reconnect, then re-mount grill. :contentReference[oaicite:12]{index=12}"
+2_2,How do I perform a full CV validation after clearing the cart?,"After ejecting the cart and closing the door, run 36 test vends: for each SKU, open the door once and return once at the red-marked locations. A pass is ≥29/30 correct detections. If below 97%, repeat 3–5 more vends or log a red-line adjustment ticket with CV Company."
+2_4,How do I enter Service-UI admin mode?,"Tap the PepsiCo (QuikPick) logo 10× in the upper-left corner, then enter your password on the credentials dialog."
+2_13,What’s the manual override procedure if the lock motor fails?,"Insert the barrel key into the T-Handle lock, rotate clockwise, then pull the door open. After service, return the T-Handle to vertical and remove the key."
+3_03,What are the steps to replace the door-sensor assembly?,"Unplug the cooler (GFCI), remove the front grill, disconnect the sensor’s logic cable, unscrew its two Philips screws, replace the sensor, reconnect, then re-mount grill."
 
 3_09,How do I inspect the camera housing for damage?,"Power off and unplug the kiosk. Remove the front bezel to expose the camera housing (improved in scale-up for extra cable room). Look for cracks or crushed sections and verify the housing mounting screws are tight."
 3_09,What’s the procedure to replace a damaged camera housing?,"Order the updated camera housing assembly (part QP-CAM-HSG2). Remove the old housing by unscrewing the four mounting bolts, unplug the camera cable, install the new housing, reconnect the cable, and re-run the Camera Diagnostics in the Service UI."
@@ -187,13 +191,10 @@ ErrorCode,Question,Answer
 ----------------------------------------------------------------------
 3_03,How to confirm SW version?,"Hello! To confirm the software version, follow these steps:\n\n1. Log in to the Service UI.\n2. Go to the ""BasicInfo"" section.\n3. Check the ""Software Version"" field."
 3_03,What causes OPEN_LOCK_FAIL_TIMEOUT?,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause./nLock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated."
-3_03,What causes OPEN_LOCK_FAIL_TIMEOUT?,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause./nLock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated."3_03,What if I still encounter issues after rebooting?,"Since you have already tried the initial steps to reboot the cooler, let's dive deeper. If the error code 3_03 (OPEN_LOCK_FAIL_TIMEOUT) persists, it's possible that there might be a more serious issue with the lock or the communication between the lock and the Jupiter. In this case, I would recommend following the troubleshooting steps provided in the documentation for this error code. If you have any further questions or concerns, feel free to ask."
-2_4,Hi,Hi! It's great to chat with you too! How can I help you today? Are you experiencing any issues with your QuikPick kiosk or do you have some general questions?
-2_4,hi,Hi! It's great to chat with you too! How can I help you today? Are you experiencing any issues with your QuikPick kiosk or do you have some general questions?
-2_4,Hello,Hi there! Welcome to QuikPick Support! I'm here to help with any questions or concerns you may have about your kiosk. How can I assist you today?
-2_4,hello,Hi! It's great to chat with you too! How can I help you today? Are you experiencing any issues with your kiosk or do you have some questions about our services?
-2_4,What does this serrro mean?,"Hi! I'm QuikPick Oracle. I'm here to help with any questions or concerns about your kiosk. It seems like you're asking about an error code, but I couldn't quite understand what ""serrro"" refers to. Could you please double-check the actual error code and I'll be happy to assist you further?"
-3_03,what's up?,Hi! It's great to chat with you too! I'm here to help with any questions or concerns you may have about your QuikPick kiosk. How can I assist you today?
-3_03,How to reboot?,"Press the GFCI’s RESET button, unplug and re-plug the mains cord, then open the Service UI → “Reboot” dialog."
-3_03,Hi,Hi! It's great to chat with you too! I'm here to help with any questions or concerns you may have about your QuikPick kiosk. How can I assist you today?
-3_03,HOla?,¡Hola! ¡Es un pleasure chatting with you too! I'm here to help with any questions or concerns you may have about your QuikPick kiosk. How can I assist you today?
+3_03,How to troublshoot?,Start by rebooting the cooler.
+3_03,I've re‑paired the RFID and repeated the previous tests; what's next?,"Cycle through Steps 1–5 until each one passes. If all items PASS but the OPEN_LOCK_FAIL_TIMEOUT error still appears, the lock hardware itself may be faulty. At that point, replace the lock mechanism or escalate to your CV company’s advanced support for deeper diagnostics."
+3_03,I've ensured the lock cable is properly connected; what's next?,"Next, confirm the RFID pairing: open the FQC App and view the pairing between the reader and tag. If the reader and tag IDs match, the pairing is correct. If they differ, re‑pair them per the CV company’s procedure or contact CV support for assistance. Once re‑paired, repeat the lock‑signal functionality test in the Service UI."
+3_03,I've verified the lock disengages via the Service UI; what's next?,"Inspect the lock cable assembly: power off the cooler and remove the control‑box cover. Using the electrical diagram on the cover and the PC sticker as guides, locate the cable labeled “LOCK.” Confirm the connector is fully seated on the Jupiter and tighten as needed. If the cable insulation or connector shows damage, replace the entire assembly before moving on."
+3_03,I've confirmed the software version is correct; what's next?,"Now test the lock and lock‑signal functionality to rule out mechanical blockage: physically open the door by pulling the handle. If the lock remains engaged, access the Service UI, tap “Operation,” then “Open Door.” If the lock disengages on command, the lock mechanism and control signal are functioning properly."
+3_03,I've rebooted the cooler; what's next?,"Lock abnormal means the Jupiter senses the lock but its default state isn’t as expected—often due to software control or physical blockage. Next, confirm the software version: open the Service UI and navigate to the BasicInfo section. Verify the SW version; if it’s incorrect, take a photo of the BasicInfo screen and contact the CV company to get the proper update. After updating, return to BasicInfo and ensure the new version is displayed before proceeding."
+3_03,How to troubleshoot?,"Start by rebooting the cooler. Press the GFCI’s RESET button, unplug and re-plug the mains cord, then open the Service UI → “Reboot” dialog."
