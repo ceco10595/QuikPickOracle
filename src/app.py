@@ -487,16 +487,18 @@ if st.session_state.pending_q:
         #    top_p=0.95,
         #    stop=["<END>"],
         #)
-        resp = hf_pipe(
+        outputs = hf_pipe(
             prompt,
             max_new_tokens=MAX_TOKENS,
             temperature=0.2,
             top_p=0.95,
+            #eos_token_id=hf_pipe.tokenizer.eos_token_id,
             return_full_text=False,
         )
-        raw = resp[0]["generated_text"].strip()
+        # `outputs` is a list of {"generated_text": ...}
+        raw = outputs[0]["generated_text"].strip()
 
-        raw    = resp["choices"][0]["text"].strip()  # type: ignore
+
         if "<END>" in raw:
             raw = raw.split("<END>", 1)[0].rstrip()
 
