@@ -14,4 +14,4 @@ streamlit-feedback
 Pillow
 transformers
 torch
-pysqlite3-binary>=0.5.4
+pysqlite3-binary==0.5.4
