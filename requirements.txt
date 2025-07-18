@@ -1,14 +1,13 @@
 streamlit
 pandas
 sentence-transformers
-chromadb==0.4.2
+pysqlite3-binary>=0.5.8      # <- supply a new sqlite
+chromadb==0.4.2               # now Chroma will find a new sqlite
 langchain-core
 langchain-community
 tiktoken
 faiss-cpu
-#llama_cpp_python #[metal] @ git+https://github.com/abetlen/llama-cpp-python.git
 numpy
-#llama-cpp
 rapidfuzz
 streamlit-feedback
 Pillow
