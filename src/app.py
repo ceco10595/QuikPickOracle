@@ -7,7 +7,16 @@ from typing import List, Dict, Any
 from PIL import Image
 
 import streamlit as st
-from chromadb import PersistentClient
+import chromadb
+from chromadb.config import Settings
+from chromadb import Client
+client = chromadb.Client(
+    Settings(
+        chroma_db_impl="duckdb+parquet",
+        persist_directory="vectorstore"
+    )
+)
+store = client.get_collection("errors")
 from langchain_core.messages import HumanMessage, AIMessage
 from sentence_transformers import SentenceTransformer
 from numpy import dot
@@ -67,7 +76,14 @@ def load_hf_pipe():
 
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
-    return PersistentClient(path=VECTOR_DIR).get_collection("errors")
+    client = Client(
+        Settings(
+            chroma_db_impl="duckdb+parquet",     # or "sqlite" if you still have a compliant SQLite
+            persist_directory=VECTOR_DIR,
+        )
+    )
+    # get_or_create_collection will create “errors” if it doesn’t already exist
+    return client.get_or_create_collection("errors")
 
 @st.cache_resource(show_spinner="Loading embedder…")
 def load_embedder():
