@@ -6,10 +6,11 @@ langchain-core
 langchain-community
 tiktoken
 faiss-cpu
-llama_cpp_python #[metal] @ git+https://github.com/abetlen/llama-cpp-python.git
+#llama_cpp_python #[metal] @ git+https://github.com/abetlen/llama-cpp-python.git
 numpy
-llama-cpp
+#llama-cpp
 rapidfuzz
 streamlit-feedback
 Pillow
 transformers
+torch
