@@ -13,6 +13,7 @@ from sentence_transformers import SentenceTransformer
 from numpy import dot
 from numpy.linalg import norm
 from llama_cpp import Llama
+from transformers.pipelines import pipeline
 
 from prompt_templates import SYSTEM_TEMPLATE, build_prompt
 from feedback_db import save as save_feedback          
@@ -48,13 +49,20 @@ MEM_TURNS  = 8
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
 @st.cache_resource(show_spinner="Loading LLaMA…")
-def load_llm():
-    return Llama(
-        model_path=MODEL_PATH,
-        lora_adapter=LORA_PATH if Path(LORA_PATH).exists() else None,
-        n_ctx=8192,
-        n_gpu_layers=-1,
-        verbose=False,
+#def load_llm():
+#    return Llama(
+#        model_path=MODEL_PATH,
+#        lora_adapter=LORA_PATH if Path(LORA_PATH).exists() else None,
+#        n_ctx=8192,
+#        n_gpu_layers=-1,
+#        verbose=False,
+#    )
+def load_hf_pipe():
+    return pipeline(
+        task="text-generation",
+        model="elinas/Llama-3-13B-Instruct",
+        trust_remote_code=True,
+        device="mps",  # or device=0 for CUDA
     )
 
 @st.cache_resource(show_spinner="Opening vector store…")
@@ -65,7 +73,8 @@ def load_store():
 def load_embedder():
     return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="mps")
 
-llm      = load_llm()
+#llm      = load_llm()
+hf_pipe  = load_hf_pipe()
 store    = load_store()
 embedder = load_embedder()
 
@@ -471,13 +480,22 @@ if st.session_state.pending_q:
             m.content for m in st.session_state.history[-MEM_TURNS:]
         )
         prompt = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
-        resp   = llm(
+        #resp   = llm(
+        #    prompt,
+        #    max_tokens=MAX_TOKENS,
+        #    temperature=0.2,
+        #    top_p=0.95,
+        #    stop=["<END>"],
+        #)
+        resp = hf_pipe(
             prompt,
-            max_tokens=MAX_TOKENS,
+            max_new_tokens=MAX_TOKENS,
             temperature=0.2,
             top_p=0.95,
-            stop=["<END>"],
+            return_full_text=False,
         )
+        raw = resp[0]["generated_text"].strip()
+
         raw    = resp["choices"][0]["text"].strip()  # type: ignore
         if "<END>" in raw:
             raw = raw.split("<END>", 1)[0].rstrip()

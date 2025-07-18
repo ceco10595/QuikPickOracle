@@ -1,10 +1,15 @@
-streamlit>=1.36
+streamlit
 pandas
 sentence-transformers
-chromadb>=0.5
+chromadb
 langchain-core
 langchain-community
 tiktoken
-faiss-cpu           # optional benchmark
-# ↓ Metal back-end build (copy + paste the full line when installing)
-llama_cpp_python[metal] @ git+https://github.com/abetlen/llama-cpp-python.git
+faiss-cpu
+llama_cpp_python #[metal] @ git+https://github.com/abetlen/llama-cpp-python.git
+numpy
+llama-cpp
+rapidfuzz
+streamlit-feedback
+Pillow
+transformers
