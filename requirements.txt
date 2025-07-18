@@ -1,7 +1,7 @@
 streamlit
 pandas
 sentence-transformers
-chromadb
+chromadb==0.4.2
 langchain-core
 langchain-community
 tiktoken
