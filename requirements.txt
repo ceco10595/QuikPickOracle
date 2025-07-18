@@ -1,7 +1,7 @@
 streamlit
 pandas
 sentence-transformers
-pysqlite3-binary>=0.5.8      # <- supply a new sqlite
+pysqlite3-binary>=0.5.4
 chromadb==0.4.2               # now Chroma will find a new sqlite
 langchain-core
 langchain-community
