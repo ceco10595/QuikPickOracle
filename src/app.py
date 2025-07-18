@@ -442,7 +442,7 @@ if st.session_state.pending_q:
     # if they’ve asked “the same” >3 times, escalate
     if repeat_count > 2:
         st.session_state.history.append(
-            AIMessage(content="Contact QuikPick support staff at (123) 456-7890")
+            AIMessage(content="Thank you for your patience. Please contact the QuikPick team. You will need a photo of the Service UI BasicInfo section and the Jupiter PCSN. Ensure you mention the error code to the team.")
         )
         # clear the “thinking” flag so we don’t lock the input
         st.session_state.is_thinking = False
