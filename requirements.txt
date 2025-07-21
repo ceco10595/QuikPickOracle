@@ -1,4 +1,4 @@
 chromadb==1.0.15
 langchain_core
 sentence_transformers
-llama_cpp
+llama-cpp-python
