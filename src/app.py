@@ -7,7 +7,6 @@ from typing import List, Dict, Any
 from PIL import Image
 
 import streamlit as st
-from chromadb import PersistentClient
 from langchain_core.messages import HumanMessage, AIMessage
 from sentence_transformers import SentenceTransformer
 from numpy import dot
