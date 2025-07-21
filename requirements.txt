@@ -4,5 +4,4 @@ sentence-transformers>=2.2
 llama-cpp-python>=0.1.79
 rapidfuzz>=2.14
 Pillow>=9.5
-streamlit-feedback>=0.1
 huggingface-hub>=0.16
