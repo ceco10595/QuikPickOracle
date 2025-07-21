@@ -20,6 +20,8 @@ from feedback_db import _append_positive, _append_negative
 from rapidfuzz import fuzz, process 
 from streamlit_feedback import streamlit_feedback
 from huggingface_hub import hf_hub_download
+from chromadb import Client
+
 st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
 st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
 st.session_state.setdefault("pending_q", None)
@@ -60,7 +62,8 @@ def load_llm():
 
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
-    return PersistentClient(path=VECTOR_DIR).get_collection("errors")
+    client = Client()                   # in‑memory only
+    return client.get_collection("errors")
 
 @st.cache_resource(show_spinner="Loading embedder…")
 def load_embedder():
