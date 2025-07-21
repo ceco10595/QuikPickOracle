@@ -1,15 +1,9 @@
-streamlit
-pandas
-sentence-transformers
-pysqlite3-binary>=0.5.4
-chromadb==0.4.2               # now Chroma will find a new sqlite
-langchain-core
-langchain-community
-tiktoken
-faiss-cpu
-numpy
-rapidfuzz
-streamlit-feedback
-Pillow
-transformers
-torch
+streamlit>=1.25
+chromadb>=0.4
+langchain-core>=0.0.200
+sentence-transformers>=2.2
+llama-cpp-python>=0.1.79
+rapidfuzz>=2.14
+Pillow>=9.5
+streamlit-feedback>=0.1
+huggingface-hub>=0.16
