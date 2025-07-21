@@ -11,14 +11,13 @@ from langchain_core.messages import HumanMessage, AIMessage
 from sentence_transformers import SentenceTransformer
 from numpy import dot
 from numpy.linalg import norm
-from llama_cpp import Llama
+from huggingface_hub import InferenceApi
 
 from prompt_templates import SYSTEM_TEMPLATE, build_prompt
 from feedback_db import save as save_feedback          
 from feedback_db import _append_positive, _append_negative  
 from rapidfuzz import fuzz, process 
 from streamlit_feedback import streamlit_feedback
-from huggingface_hub import hf_hub_download
 from chromadb import Client
 
 st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
@@ -41,24 +40,22 @@ with col2:
 
 
 # ── CONFIG ────────────────────────────────────────────────────────────────
-MODEL_PATH = "models/llama-3-13b-Instruct-Q4_K_M.gguf"
-LORA_PATH  = "models/lora-adapter"
+#MODEL_PATH = "models/llama-3-13b-Instruct-Q4_K_M.gguf"
+#LORA_PATH  = "models/lora-adapter"
 VECTOR_DIR = "vectorstore"
 ERROR_RE   = re.compile(r"^\d+_\d+$")
 MAX_TOKENS = 256
 MEM_TURNS  = 8
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
-@st.cache_resource(show_spinner="Loading LLaMA…")
+@st.cache_resource(show_spinner="Connecting to Hugging Face…")
 def load_llm():
-    return Llama(
-        model_path=MODEL_PATH,
-        lora_adapter=LORA_PATH if Path(LORA_PATH).exists() else None,
-        n_ctx=8192,
-        n_gpu_layers=-1,
-        verbose=False,
+    return InferenceApi(
+        repo_id="meta-llama/Llama-3-13b-Instruct",      # or your preferred HF repo
+        token=st.secrets["hf"]["api_token"],
     )
 
+llm = load_llm()
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
     client = Client()                   # in‑memory only
@@ -127,14 +124,7 @@ def _rerun():
     else:
         st.experimental_rerun()
 
-@st.cache_resource(show_spinner="Downloading model from Hugging Face…")
-def fetch_model_from_hf() -> str:
-    repo_id  = os.environ.get("HF_REPO", "QuickPick/quikpick-llama3-13b-gguf")
-    filename = os.environ.get("HF_FILENAME", "models/llama-3-13b-Instruct-Q4_K_M.gguf")
-    return hf_hub_download(repo_id=repo_id, filename=filename, cache_dir="models")
 
-# override the constant
-MODEL_PATH = fetch_model_from_hf()
 # ── HELPERS ─────────────────────────────────────────────────────────────────
 QA_PATH = Path("data/sample_qa.csv")
 
@@ -482,16 +472,23 @@ if st.session_state.pending_q:
             m.content for m in st.session_state.history[-MEM_TURNS:]
         )
         prompt = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
-        resp   = llm(
-            prompt,
-            max_tokens=MAX_TOKENS,
-            temperature=0.2,
-            top_p=0.95,
-            stop=["<END>"],
+
+        response = llm(
+            inputs=prompt,
+            params={
+                "max_new_tokens": MAX_TOKENS,
+                "temperature": 0.2,
+                "top_p": 0.95,
+                "stop": ["<END>"],
+            }
         )
-        raw    = resp["choices"][0]["text"].strip()  # type: ignore
+
+        # HF returns your text under "generated_text"
+        raw = response.get("generated_text", "")
+
+        # strip off your stop token
         if "<END>" in raw:
-            raw = raw.split("<END>", 1)[0].rstrip()
+            raw = raw.split("<END>", 1)[0].strip()
 
     main_ans, llm_fups = (raw.split("### Follow-Up", 1) + [""])[:2]
     main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
