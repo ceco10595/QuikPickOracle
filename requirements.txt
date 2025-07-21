@@ -2,4 +2,4 @@ chromadb==1.0.15
 langchain_core
 sentence_transformers
 rapidfuzz
-streamlit_feedback
+streamlit-feedback
