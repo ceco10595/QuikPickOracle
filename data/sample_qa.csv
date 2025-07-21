@@ -1,200 +1,206 @@
 ErrorCode,Question,Answer
-
-*,How do I reboot the cooler from the GFCI?,"Press the GFCI’s RESET button, unplug and re-plug the mains cord, then open the Service UI → “Reboot” dialog."
-*,What’s the unit’s capacity and footprint?,"This Gen-2 QuikPick (IDW G-28) holds 336×20 oz SKUs in a 30.4״ × 36.3״ × 81.6״ chassis."
-*,How do I contact QuickPick support?,"Call 1-800-QUIKPICK to report any hardware or software issues."
+*,How do I reboot the cooler from the GFCI?,"Press the GFCI's RESET button, unplug and re-plug the mains cord, then open the Service UI ’ Reboot dialog."
+*,What's the unit's capacity and footprint?,This Gen-2 QuikPick (IDW G-28) holds 336Ã—20 oz SKUs in a 30.4×´ Ã— 36.3×´ Ã— 81.6×´ chassis.
+*,How do I contact QuickPick support?,Call 1-800-QUIKPICK to report any hardware or software issues.
 *,What packaging do I need for relocating a unit?,"Use a G-28-Q pallet, poly bag, carton topper, edge protectors (Uline S-15205, S-6062, S-2459, S-2458), foam pads (S-8339), shrink wrap, and straps."
 
 2_2,What does MACHINE_IS_IN_USE mean?,"Error code 2_2 indicates that a shopping cart is still detected in the Cart Recognition Area (CCR), so the kiosk will not accept new commands until the cart is cleared."
-2_2,How do I check if the cart is present?,"Open the Service UI, tap the QuikPick logo 10 times to unlock maintenance mode, select “Cart Status,” and verify whether the “Cart Present” indicator is on."
-2_2,How do I remove the cart from the CCR?,"Use the Service UI menu: Operation → Eject Cart. Physically remove any cart or debris, then close the door to reset the sensor."
+2_2,How do I check if the cart is present?,"Open the Service UI, tap the QuikPick logo 10 times to unlock maintenance mode, select Cart Status, and verify whether the Cart Present indicator is on."
+2_2,How do I remove the cart from the CCR?,"Use the Service UI menu: Operation Eject Cart. Physically remove any cart or debris, then close the door to reset the sensor."
 2_2,Can I bypass the cart sensor to resume operation?,"No; for safety, the machine requires the CCR to be clear. You must eject the cart or perform a full reboot via the GFCI reset to clear the error."
-2_2,Where are cart sensor logs stored?,"Cart sensor events are logged at `/var/log/vision/cart_status.log` on the kiosk’s internal storage; you can download them via the Admin → Logs menu."
+2_2,Where are cart sensor logs stored?,Cart sensor events are logged at `/var/log/vision/cart_status.log` on the kiosk's internal storage; you can download them via the Admin ’ Logs menu.
+2_2,How do I verify SW and CV versions?,"In maintenance mode (tap logo 10 times), go to BasicInfo on the Service UI. Compare the displayed SW and CV version numbers against your release matrix."
 
 2_4,What does ALGORITHM_FAILURE mean?,"Error code 2_4 means the software (SW) and computer-vision (CV) module versions do not match, so the AI recognition algorithm cannot run."
-2_4,How do I verify SW and CV versions?,"In maintenance mode (tap logo ×10), go to BasicInfo on the Service UI. Compare the displayed SW and CV version numbers against your release matrix."
-2_4,How do I update the software or CV module?,"From the Consumer UI, navigate Settings → System Update, check for updates, and follow prompts. For the CV module, follow the manufacturer’s update procedure or contact support."
-2_4,What if the CV module fails to install?,"Call 1-800-QUIKPICK and provide the BasicInfo screen capture along with any update log snippets; they’ll walk you through an offline CV update package."
-2_4,Where can I find the update logs?,"Software update logs live in `/var/log/sw/update.log`; the CV module’s update process logs to `/var/log/vision/update.log`."
+2_4,How do I verify SW and CV versions?,"In maintenance mode (tap logo 10 times), go to BasicInfo on the Service UI. Compare the displayed SW and CV version numbers against your release matrix."
+2_4,How do I update the software or CV module?,"From the Consumer UI, navigate Settings ’ System Update, check for updates, and follow prompts. For the CV module, follow the manufacturer's update procedure or contact support."
+2_4,What if the CV module fails to install?,Call 1-800-QUIKPICK and provide the BasicInfo screen capture along with any update log snippets; they'll walk you through an offline CV update package.
+2_4,Where can I find the update logs?,Software update logs live in `/var/log/sw/update.log`; the CV module's update process logs to `/var/log/vision/update.log`.
 
-2_13,What does LOCK_ABNORMAL indicate?,"Error code 2_13 means the lock actuator reports engagement but the door isn’t in its default state—either physical blockage or pairing mismatch."
+2_13,What does LOCK_ABNORMAL indicate?,Error code 2_13 means the lock actuator reports engagement but the door isn't in its default state”either physical blockage or pairing mismatch.
 2_13,How do I test lock actuator wiring?,"Power off the kiosk, open the control box (see Electrical Diagram in the beta field PDF), disconnect the actuator cable, and use a multimeter to check continuity across the two terminals."
 2_13,How can I verify RFID pairing?,"In the FQC App, open the RFID Pairing menu, initiate pairing, and confirm the displayed reader and tag IDs match exactly."
-2_13,What if the lock actuator still misbehaves?,"Replace the actuator harness with the new shielded cable from the Beta Field hardware kit (secondary shielding added in scale-up) and retest."
-2_13,Where are lock diagnostic logs located?,"Lock events and errors are recorded in `/var/log/vision/lock_diagnostics.log`; you can tail this file in the Admin → Logs menu."
+2_13,What if the lock actuator still misbehaves?,Replace the actuator harness with the new shielded cable from the Beta Field hardware kit (secondary shielding added in scale-up) and retest.
+2_13,Where are lock diagnostic logs located?,Lock events and errors are recorded in `/var/log/vision/lock_diagnostics.log`; you can tail this file in the Admin ’ Logs menu.
+2_13,How do I verify SW and CV versions?,"In maintenance mode (tap logo 10 times), go to BasicInfo on the Service UI. Compare the displayed SW and CV version numbers against your release matrix."
 
-3_02,Why does MACHINE_IS_IN_USE appear on Open Lock?,"Error code 3_02 is the same CART‐IN‐USE sensor: the system still detects a cart in the CCR and blocks lock commands until it’s cleared."
-3_02,How do I clear the cart before opening the lock?,"Open Service UI → Operation → Eject Cart, remove any cart, then retry Open Door in Operation mode."
+3_02,Why does MACHINE_IS_IN_USE appear on Open Lock?,Error code 3_02 is the same CARTINUSE sensor: the system still detects a cart in the CCR and blocks lock commands until it's cleared.
+3_02,How do I clear the cart before opening the lock?,"Open Service UI Operation Eject Cart, remove any cart, then retry Open Door in Operation mode."
 3_02,What if the CCR sensor keeps triggering?,"Clean the CCR sensor window with a soft cloth (see Unit Prep & Validation PDF), ensure no packaging debris is blocking it, then cycle power."
-3_02,Can I override the CCR check?,"No override is available—for safety, you must physically clear the CCR or reboot the kiosk via the front‐panel switch behind the grill."
-3_02,Where is the CCR maintenance procedure?,"Refer to the “Cart Recognition Area Cleaning” section of your Unit Prep & Validation PDF for step-by-step instructions."
+3_02,Can I override the CCR check?,"No override is available”for safety, you must physically clear the CCR or reboot the kiosk via the frontpanel switch behind the grill."
+3_02,Where is the CCR maintenance procedure?,Refer to the Cart Recognition Area Cleaning section of your Unit Prep & Validation PDF for step-by-step instructions.
+3_02,How do I verify SW and CV versions?,"In maintenance mode (tap logo 10 times), go to BasicInfo on the Service UI. Compare the displayed SW and CV version numbers against your release matrix."
 
 3_03,What causes OPEN_LOCK_FAIL_TIMEOUT?,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause./nLock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated."
 3_03,How do I remove blockages?,"Inspect the striker area, remove debris using a non-conductive brush per the Hardware Replacement Process PDF, then retry Open Door."
-3_03,How can I adjust the open‐lock timeout?,"In maintenance mode, go to Settings → Advanced → Timeout Config and increase the Open Lock timeout value by up to 5 seconds."
+3_03,How can I adjust the openlock timeout?,"In maintenance mode, go to Settings ’ Advanced ’ Timeout Config and increase the Open Lock timeout value by up to 5 seconds."
 3_03,What if the timeout still occurs?,"Perform a full reboot: press GFCI RESET, unplug/replug the AC cord, then use the UI reboot command or the physical switch behind the grill."
-3_03,Where are lock timeout logs?,"Lock operation timeouts are logged in `/var/log/vision/lock_timeout.log`; download via Admin → Logs for analysis."
-3_03, How do I reboot the cooler?,"Press the GFCI’s RESET button, unplug and re-plug the mains cord, then open the Service UI → “Reboot” dialog."
-3_03,How do I reboot the cooler from the GFCI?,"Press the GFCI’s RESET button, unplug and re-plug the mains cord, then open the Service UI → “Reboot” dialog."
-3_03,What’s the unit’s capacity and footprint?,"This Gen-2 QuikPick (IDW G-28) holds 336×20 oz SKUs in a 30.4״ × 36.3״ × 81.6״ chassis."
-3_03,How do I contact QuickPick support?,"Call 1-800-QUIKPICK to report any hardware or software issues."
+3_03,Where are lock timeout logs?,Lock operation timeouts are logged in `/var/log/vision/lock_timeout.log`; download via Admin ’ Logs for analysis.
+3_03, How do I reboot the cooler?,"Reboot the cooler by pressing the GFCI’s RESET button, unplugging and re-plugging the mains cord, then opening the Service UI → “Reboot” dialog."
+3_03,How do I reboot the cooler from the GFCI?,"Reboot the cooler by pressing the GFCI’s RESET button, unplugging and re-plugging the mains cord, then opening the Service UI → “Reboot” dialog."
+3_03,Whats the units capacity and footprint?,This Gen-2 QuikPick (IDW G-28) holds 336Ã—20 oz SKUs in a 30.4×´ Ã— 36.3×´ Ã— 81.6×´ chassis.
+3_03,How do I contact QuickPick support?,Call 1-800-QUIKPICK to report any hardware or software issues.
 3_03,What packaging do I need for relocating a unit?,"Use a G-28-Q pallet, poly bag, carton topper, edge protectors (Uline S-15205, S-6062, S-2459, S-2458), foam pads (S-8339), shrink wrap, and straps."
+3_03,What is the  error code?,
+3_03,How to unlock?, 
+3_03,How do I verify SW and CV versions?,"In maintenance mode (tap logo 10 times), go to BasicInfo on the Service UI. Compare the displayed SW and CV version numbers against your release matrix."
 
-3_06,What does POWER_FAILURE mean?,"Error code 3_06 signals an unexpected AC power loss detected by the kiosk’s internal power‐monitor circuit."
-3_06,How do I check the power supply?,"Ensure the kiosk is plugged into a 110 V 60 Hz outlet, press RESET on the GFCI, then toggle the front switch (behind the grill) OFF→ON."
-3_06,What are the reboot steps after a power event?,"Press the GFCI RESET, unplug and replug the cooler, then in the Consumer UI open the credentials dialog and tap “Reboot,” or use the physical switch."
-3_06,What if the kiosk won’t power back on?,"Verify outlet voltage with a multimeter, inspect the AC input wiring in the Control Box (see Electrical Diagram), and check the internal fuse status."
-3_06,Where can I find power event logs?,"All power interruptions are recorded in `/var/log/system/power_events.log`; access via Admin → Logs to review timestamps and causes."
+3_06,What does POWER_FAILURE mean?,Error code 3_06 signals an unexpected AC power loss detected by the kiosk's internal powermonitor circuit.
+3_06,How do I check the power supply?,"Ensure the kiosk is plugged into a 110 V 60 Hz outlet, press RESET on the GFCI, then toggle the front switch (behind the grill) OFF’ON."
+3_06,What are the reboot steps after a power event?,"Press the GFCI RESET, unplug and replug the cooler, then in the Consumer UI open the credentials dialog and tap Reboot, or use the physical switch."
+3_06,What if the kiosk won't power back on?,"Verify outlet voltage with a multimeter, inspect the AC input wiring in the Control Box (see Electrical Diagram), and check the internal fuse status."
+3_06,Where can I find power event logs?,All power interruptions are recorded in `/var/log/system/power_events.log`; access via Admin ’ Logs to review timestamps and causes.
+3_06,How do I verify SW and CV versions?,"In maintenance mode (tap logo 10 times), go to BasicInfo on the Service UI. Compare the displayed SW and CV version numbers against your release matrix."
 
-3_06,What does CAMERA_OBSTRUCTED mean?,"Error code 3_06 indicates that the kiosk’s vision camera is blocked—something is physically covering or dirtying the lens, preventing product recognition."
+3_06,What does CAMERA_OBSTRUCTED mean?,"Error code 3_06 indicates that the kiosk's vision camera is blocked”something is physically covering or dirtying the lens, preventing product recognition."
 3_06,How do I clean the camera window?,"Power off the kiosk, open the service panel, locate the camera housing, gently wipe the lens with a lint-free cloth and isopropyl alcohol, then let it dry before restarting."
-3_06,Where is the camera housing located?,"The camera is mounted behind the top-center grill. Remove the grill via its latch, then you’ll see the metal camera housing on the right side."
-3_06,How can I check camera alignment?,"After cleaning, power on in maintenance mode (tap logo ×10), go to Vision Test → Live Feed, and confirm objects are centered in the viewport."
+3_06,Where is the camera housing located?,"The camera is mounted behind the top-center grill. Remove the grill via its latch, then you'll see the metal camera housing on the right side."
+3_06,How can I check camera alignment?,"After cleaning, power on in maintenance mode (tap logo Ã—10), go to Vision Test ’ Live Feed, and confirm objects are centered in the viewport."
 3_06,What if obstruction persists after cleaning?,"If the view is still blocked, inspect the housing interior for loose cables or debris, reseat the ribbon cable, and if needed replace the housing assembly per the Hardware Replacement Process."
 
-3_08,What does MACHINE_CLOSED mean?,"Error code 3_08 means the kiosk believes the door is closed, so it won’t accept open-door commands until the door sensor reports “open.”"
-3_08,How do I open the door manually?,"Use the Service UI: Operation → Open Door, or press and hold the front-panel T-Lock button until the latch releases, then gently pull the door."
-3_08,What safety interlocks might be engaged?,"The system may prevent opening if the payment cycle hasn’t completed or if the cart sensor is triggered—clear any active session and ensure the cart is removed."
-3_08,How do I check the door sensor?,"In maintenance mode, navigate to Diagnostics → Door Sensor and observe its real-time status; toggle the sensor magnet on/off to verify it changes state."
-3_08,Where are door-close events logged?,"Door sensor events are recorded in `/var/log/vision/door_events.log`; access via Admin → Logs to review timestamps and sensor readings."
+3_08,What does MACHINE_CLOSED mean?,"Error code 3_08 means the kiosk believes the door is closed, so it won't accept open-door commands until the door sensor reports open."
+3_08,How do I open the door manually?,"Use the Service UI: Operation ’ Open Door, or press and hold the front-panel T-Lock button until the latch releases, then gently pull the door."
+3_08,What safety interlocks might be engaged?,The system may prevent opening if the payment cycle hasn't completed or if the cart sensor is triggered”clear any active session and ensure the cart is removed.
+3_08,How do I check the door sensor?,"In maintenance mode, navigate to Diagnostics ’ Door Sensor and observe its real-time status; toggle the sensor magnet on/off to verify it changes state."
+3_08,Where are door-close events logged?,Door sensor events are recorded in `/var/log/vision/door_events.log`; access via Admin ’ Logs to review timestamps and sensor readings.
 
-3_09,What does PC_OFFLINE mean?,"Error code 3_09 indicates that the kiosk’s onboard PC (Linux board) is not communicating—often due to a crash or network failure."
-3_09,How do I verify PC connectivity?,"In maintenance mode, open Network → Status on the Service UI to see if the board has a valid IP and can ping your DHCP server or gateway."
-3_09,How do I reboot the PC component?,"Press the GFCI RESET, unplug/replug the AC cord, then on the UI credentials dialog tap “Reboot,” or flip the hidden rocker switch behind the grill."
-3_09,Where can I find PC system logs?,"System logs live in `/var/log/system/journal/`; use Admin → Logs → Download System Logs to fetch the most recent boot and error entries."
-3_09,What if the PC stays offline after reboot?,"If it fails to reconnect, reseat the SATA and power cables in the control box, verify the board’s health LEDs, and escalate by calling 1-800-QUIKPICK."
+3_09,What does PC_OFFLINE mean?,Error code 3_09 indicates that the kiosk's onboard PC (Linux board) is not communicating”often due to a crash or network failure.
+3_09,How do I verify PC connectivity?,"In maintenance mode, open Network ’ Status on the Service UI to see if the board has a valid IP and can ping your DHCP server or gateway."
+3_09,How do I reboot the PC component?,"Press the GFCI RESET, unplug/replug the AC cord, then on the UI credentials dialog tap Reboot, or flip the hidden rocker switch behind the grill."
+3_09,Where can I find PC system logs?,System logs live in `/var/log/system/journal/`; use Admin ’ Logs ’ Download System Logs to fetch the most recent boot and error entries.
+3_09,What if the PC stays offline after reboot?,"If it fails to reconnect, reseat the SATA and power cables in the control box, verify the board's health LEDs, and escalate by calling 1-800-QUIKPICK."
 
-2_2,How do I perform a full CV validation after clearing the cart?,"After ejecting the cart and closing the door, run 36 test vends: for each SKU, open the door once and return once at the red-marked locations. A pass is ≥29/30 correct detections. If below 97%, repeat 3–5 more vends or log a red-line adjustment ticket with CV Company."
-2_4,How do I enter Service-UI admin mode?,"Tap the PepsiCo (QuikPick) logo 10× in the upper-left corner, then enter your password on the credentials dialog."
-2_13,What’s the manual override procedure if the lock motor fails?,"Insert the barrel key into the T-Handle lock, rotate clockwise, then pull the door open. After service, return the T-Handle to vertical and remove the key."
-3_03,What are the steps to replace the door-sensor assembly?,"Unplug the cooler (GFCI), remove the front grill, disconnect the sensor’s logic cable, unscrew its two Philips screws, replace the sensor, reconnect, then re-mount grill."
+2_2,How do I perform a full CV validation after clearing the cart?,"After ejecting the cart and closing the door, run 36 test vends: for each SKU, open the door once and return once at the red-marked locations. A pass is â‰¥29/30 correct detections. If below 97%, repeat 3“5 more vends or log a red-line adjustment ticket with CV Company."
+2_4,How do I enter Service-UI admin mode?,"Tap the PepsiCo (QuikPick) logo 10Ã— in the upper-left corner, then enter your password on the credentials dialog."
+2_13,What's the manual override procedure if the lock motor fails?,"Insert the barrel key into the T-Handle lock, rotate clockwise, then pull the door open. After service, return the T-Handle to vertical and remove the key."
+3_03,What are the steps to replace the door-sensor assembly?,"Unplug the cooler (GFCI), remove the front grill, disconnect the sensor's logic cable, unscrew its two Philips screws, replace the sensor, reconnect, then re-mount grill."
 
-3_09,How do I inspect the camera housing for damage?,"Power off and unplug the kiosk. Remove the front bezel to expose the camera housing (improved in scale-up for extra cable room). Look for cracks or crushed sections and verify the housing mounting screws are tight."
-3_09,What’s the procedure to replace a damaged camera housing?,"Order the updated camera housing assembly (part QP-CAM-HSG2). Remove the old housing by unscrewing the four mounting bolts, unplug the camera cable, install the new housing, reconnect the cable, and re-run the Camera Diagnostics in the Service UI."
-3_09,Could improper conduit routing stress the housing?,"Yes—during scale-up we added an extra antenna conduit and improved camera cable shielding. Ensure all cables are routed through their dedicated conduits without kinks or pinch points to avoid housing stress."
+3_09,How do I inspect the camera housing for damage?,Power off and unplug the kiosk. Remove the front bezel to expose the camera housing (improved in scale-up for extra cable room). Look for cracks or crushed sections and verify the housing mounting screws are tight.
+3_09,What's the procedure to replace a damaged camera housing?,"Order the updated camera housing assembly (part QP-CAM-HSG2). Remove the old housing by unscrewing the four mounting bolts, unplug the camera cable, install the new housing, reconnect the cable, and re-run the Camera Diagnostics in the Service UI."
+3_09,Could improper conduit routing stress the housing?,Yes”during scale-up we added an extra antenna conduit and improved camera cable shielding. Ensure all cables are routed through their dedicated conduits without kinks or pinch points to avoid housing stress.
 
-3_10,Where is the camera cable secondary shielding inspected?,"After removing the front bezel, follow the camera cable from the housing to the control box. The added secondary shielding should cover the entire run—look for tears or exposed braid along its length."
-3_10,How do I test a suspect camera cable?,"In the Service UI go to Diagnostics → Camera Signal Test. If you see intermittent drops, power off and perform a continuity test with a multimeter across the cable’s core and shield per the electrical diagram."
-3_10,What replacement cable part should I order?,"Use the QP-CAM-CBL-2S coaxial cable (with secondary shielding). It’s documented in the Unit Prep & Validation guide and matches the improved Beta Field Testing spec."
+3_10,Where is the camera cable secondary shielding inspected?,"After removing the front bezel, follow the camera cable from the housing to the control box. The added secondary shielding should cover the entire run”look for tears or exposed braid along its length."
+3_10,How do I test a suspect camera cable?,"In the Service UI go to Diagnostics ’ Camera Signal Test. If you see intermittent drops, power off and perform a continuity test with a multimeter across the cable's core and shield per the electrical diagram."
+3_10,What replacement cable part should I order?,Use the QP-CAM-CBL-2S coaxial cable (with secondary shielding). It's documented in the Unit Prep & Validation guide and matches the improved Beta Field Testing spec.
 
-3_13,How can I access the updated control box electrical diagram?,"Open the control box cover (behind the lower grill) and refer to the laminated diagram pasted on the inside lid—this version includes the new component list and conduit routing."
-3_13,How do I verify component placement against the diagram?,"Match each board and connector label in the box to the diagram’s legend. On scale-up units, the RFID sensor module and striker system are co-located—confirm both are present in the HIRON‐specified slots."
-3_13,What changed in the control box layout from Beta to Scale-Up?,"The scale-up added a separate conduit for antenna cables, relocated the camera cable entry point, and integrated the HIRON lock/RFID module—verify your box reflects these updates before proceeding."
+3_13,How can I access the updated control box electrical diagram?,Open the control box cover (behind the lower grill) and refer to the laminated diagram pasted on the inside lid”this version includes the new component list and conduit routing.
+3_13,How do I verify component placement against the diagram?,"Match each board and connector label in the box to the diagram's legend. On scale-up units, the RFID sensor module and striker system are co-located”confirm both are present in the HIRONspecified slots."
+3_13,What changed in the control box layout from Beta to Scale-Up?,"The scale-up added a separate conduit for antenna cables, relocated the camera cable entry point, and integrated the HIRON lock/RFID module”verify your box reflects these updates before proceeding."
 
-4_01,What is the acceptable input voltage range for the cooler?,"Per the spec sheet, the kiosk runs on 110 V ± 10 % at 60 Hz (i.e. 99 V–121 V). Any reading outside that range can trigger a POWER_VOLTAGE_OUT_OF_RANGE fault."
-4_01,How do I measure the wall outlet voltage?,"Use a digital multimeter set to AC volts. Place the probes on the hot and neutral terminals of the outlet behind the kiosk; compare the reading against the 99–121 V range."
-4_01,What should I do if the voltage is out of range?,"Install a line‐voltage regulator or UPS rated for 110 V input. If that isn’t possible, schedule a site electrician to correct the building wiring before restarting the cooler."
+4_01,What is the acceptable input voltage range for the cooler?,"Per the spec sheet, the kiosk runs on 110 V Â± 10 % at 60 Hz (i.e. 99 V“121 V). Any reading outside that range can trigger a POWER_VOLTAGE_OUT_OF_RANGE fault."
+4_01,How do I measure the wall outlet voltage?,Use a digital multimeter set to AC volts. Place the probes on the hot and neutral terminals of the outlet behind the kiosk; compare the reading against the 99“121 V range.
+4_01,What should I do if the voltage is out of range?,"Install a linevoltage regulator or UPS rated for 110 V input. If that isn't possible, schedule a site electrician to correct the building wiring before restarting the cooler."
 
-4_1,What exactly does JUPITER_OFFLINE mean?,"Error code 4_1 (JUPITER_OFFLINE) means the main control board (called “Jupiter”) isn’t communicating with the kiosk’s PC—typically a hardware or network issue. You’ll need to contact the QuickPick support team so they can investigate connectivity, power, or board failures."
-4_1,How can I verify the Jupiter board has power?,"Open the control box and check that the Jupiter’s power LED is solid green. If it’s off or red, ensure the 12 V supply cable is firmly seated and that the power switch on the back of the cooler is ON."
-4_1,Where do I find the Jupiter logs to share with support?,"In the Service UI, go to “Maintenance” → “Diagnostics” → “Download Logs.” Select the “Jupiter” category, export the log bundle, and include it when you contact QuickPick support."
-4_1,What information should I include when contacting the QuickPick team?,"Provide the kiosk’s serial number, the exact error code (4_1), timestamp of the failure, and the exported Jupiter logs. Also note any recent power interruptions or network changes."
-4_1,How quickly can I expect a support response?,"QuickPick’s SLA is a 4-hour response during business hours (M–F, 8 AM–6 PM). Outside of those times, expect a next-business-day reply."
+4_1,What exactly does JUPITER_OFFLINE mean?,"Error code 4_1 (JUPITER_OFFLINE) means the main control board (called Jupiter) isn't communicating with the kiosk's PC”typically a hardware or network issue. You'll need to contact the QuickPick support team so they can investigate connectivity, power, or board failures."
+4_1,How can I verify the Jupiter board has power?,"Open the control box and check that the Jupiter's power LED is solid green. If it's off or red, ensure the 12 V supply cable is firmly seated and that the power switch on the back of the cooler is ON."
+4_1,Where do I find the Jupiter logs to share with support?,"In the Service UI, go to Maintenance ’ Diagnostics ’ Download Logs. Select the Jupiter category, export the log bundle, and include it when you contact QuickPick support."
+4_1,What information should I include when contacting the QuickPick team?,"Provide the kiosk's serial number, the exact error code (4_1), timestamp of the failure, and the exported Jupiter logs. Also note any recent power interruptions or network changes."
+4_1,How quickly can I expect a support response?,"QuickPick's SLA is a 4-hour response during business hours (M“F, 8 AM“6 PM). Outside of those times, expect a next-business-day reply."
 
-4_3,What causes OPENING_OVERTIME?,"Error code 4_3 (OPENING_OVERTIME) indicates the door didn’t finish its open cycle within the allotted time—often due to a jam or motor issue. Contact QuickPick support so they can check motor health and door alignment."
+4_3,What causes OPENING_OVERTIME?,Error code 4_3 (OPENING_OVERTIME) indicates the door didn't finish its open cycle within the allotted time”often due to a jam or motor issue. Contact QuickPick support so they can check motor health and door alignment.
 4_3,How can I check for a physical jam?,"Visually inspect the door tracks for obstructions (e.g., debris, stray packaging). Manually slide the door open and closed to feel for resistance before retrying the automatic open."
-4_3,Where can I view the door-open timeout setting?,"In the Service UI under “Hardware Settings” → “Door Control,” you’ll see the open/close timeout configured. Note the value and share it with support if adjustments are needed."
-4_3,What logs help diagnose OPENING_OVERTIME?,"Export the “Motor & Door” logs from the Service UI’s Diagnostics screen. These include RPM and current draw readings that pinpoint motor stalls."
+4_3,Where can I view the door-open timeout setting?,"In the Service UI under Hardware Settings ’ Door Control, you'll see the open/close timeout configured. Note the value and share it with support if adjustments are needed."
+4_3,What logs help diagnose OPENING_OVERTIME?,Export the Motor & Door logs from the Service UI's Diagnostics screen. These include RPM and current draw readings that pinpoint motor stalls.
 4_3,How should I describe the problem to support?,"Tell them you saw 4_3 OPENING_OVERTIME, describe any manual testing you did, note the timeout value, and attach the Motor & Door logs for a faster root-cause analysis."
 
-4_4,What does LOCK_ABNORMAL mean?,"Error code 4_4 (LOCK_ABNORMAL) means the kiosk senses the lock mechanism but its state isn’t as expected—either blocked hardware or mismatched SW/RFID settings."
-4_4,Why should I reboot the cooler first?,"A reboot resets both the software lock-control state and the RFID reader. It’s the quickest way to rule out transient SW glitches before diving into hardware checks."
-4_4,How do I confirm the software version?,"In the Service UI’s “BasicInfo” section, note the SW version. If it’s stale, follow your standard update process, then re-check BasicInfo to ensure the new version is active."
-4_4,How can I test the lock hardware?,"Grab the door handle and pull—if it opens manually, the lock motor and striker are functional. If not, power off, open the control box, and inspect the lock cable connector at the Jupiter board for a secure fit."
-4_4,What steps do I take if RFID pairing is wrong?,"Launch the FQC mobile app, go to “RFID Pairing,” scan the reader and tag to match IDs, save the pairing, then retry the Service UI → “Operation” → “Open Door” command."
+4_4,What does LOCK_ABNORMAL mean?,Error code 4_4 (LOCK_ABNORMAL) means the kiosk senses the lock mechanism but its state isn't as expected”either blocked hardware or mismatched SW/RFID settings.
+4_4,Why should I reboot the cooler first?,A reboot resets both the software lock-control state and the RFID reader. It's the quickest way to rule out transient SW glitches before diving into hardware checks.
+4_4,How do I confirm the software version?,"In the Service UI's BasicInfo section, note the SW version. If it's stale, follow your standard update process, then re-check BasicInfo to ensure the new version is active."
+4_4,How can I test the lock hardware?,"Grab the door handle and pull”if it opens manually, the lock motor and striker are functional. If not, power off, open the control box, and inspect the lock cable connector at the Jupiter board for a secure fit."
+4_4,What steps do I take if RFID pairing is wrong?,"Launch the FQC mobile app, go to RFID Pairing, scan the reader and tag to match IDs, save the pairing, then retry the Service UI ’ Operation ’ Open Door command."
 
-4_5,What does Camera_obstructed mean?,"Error code 4_5 (Camera_obstructed) means the camera’s view is blocked—dust, tape, or a misplaced label."
-4_5,How can I clear the obstruction?,"Locate the camera window at the top-left of the cooler interior. Use a lint-free cloth and isopropyl alcohol to gently clean the lens and surrounding area."
-4_5,How do I verify the camera is now clear?,"In the Service UI, go to “Diagnostics” → “Camera Preview.” You should see a clear live image. If it’s still fuzzy, check for internal obstructions around the camera housing."
-4_5,What if I can’t reach the camera safely?,"Power off the cooler, remove the top grill, then carefully clean the lens assembly by hand. Wear antistatic gloves to avoid fingerprint smudges."
-4_5,When should I contact support instead?,"If cleaning doesn’t restore a clear image in Camera Preview, export the Camera logs from Diagnostics and contact QuickPick support for a possible camera-module replacement."
+4_5,What does Camera_obstructed mean?,"Error code 4_5 (Camera_obstructed) means the camera's view is blocked”dust, tape, or a misplaced label."
+4_5,How can I clear the obstruction?,Locate the camera window at the top-left of the cooler interior. Use a lint-free cloth and isopropyl alcohol to gently clean the lens and surrounding area.
+4_5,How do I verify the camera is now clear?,"In the Service UI, go to Diagnostics ’ Camera Preview. You should see a clear live image. If it's still fuzzy, check for internal obstructions around the camera housing."
+4_5,What if I can't reach the camera safely?,"Power off the cooler, remove the top grill, then carefully clean the lens assembly by hand. Wear antistatic gloves to avoid fingerprint smudges."
+4_5,When should I contact support instead?,"If cleaning doesn't restore a clear image in Camera Preview, export the Camera logs from Diagnostics and contact QuickPick support for a possible camera-module replacement."
 
-4_6,What does CAMERA_OFFLINE mean?,"Error code 4_6 (CAMERA_OFFLINE) means the kiosk’s PC lost communication with the camera—usually a cable or USB port fault."
+4_6,What does CAMERA_OFFLINE mean?,Error code 4_6 (CAMERA_OFFLINE) means the kiosk's PC lost communication with the camera”usually a cable or USB port fault.
 4_6,How do I check the camera connection?,"Open the control box, locate the USB cable from the camera module to the PC, and reseat both ends. Then reboot and check Camera Preview in the Service UI."
-4_6,Where are the camera logs stored?,"In Diagnostics, choose “Camera Logs.” Export them for upload to support if reconnection fails."
-4_6,What USB port should I use?,"Always use the port labeled “CAM” on the PC board. Using a generic port may disable automatic re-enumeration after reboot."
-4_6,What if reseating doesn’t bring it back online?,"Contact QuickPick support with the exported logs and note whether the Camera Preview remains blank after reseating."
+4_6,Where are the camera logs stored?,"In Diagnostics, choose Camera Logs. Export them for upload to support if reconnection fails."
+4_6,What USB port should I use?,Always use the port labeled CAM on the PC board. Using a generic port may disable automatic re-enumeration after reboot.
+4_6,What if reseating doesn't bring it back online?,Contact QuickPick support with the exported logs and note whether the Camera Preview remains blank after reseating.
 
-4_7,What does JUPITER_WEAK_NETWORK mean?,"Error code 4_7 (JUPITER_WEAK_NETWORK) means the Jupiter board’s Ethernet or Wi-Fi link quality is below threshold—intermittent control messages."
-4_7,How can I test network strength?,"In the Service UI, open “Network Diagnostics” and run the ping/test view. A packet loss above 5% or ping >100 ms triggers the error."
+4_7,What does JUPITER_WEAK_NETWORK mean?,Error code 4_7 (JUPITER_WEAK_NETWORK) means the Jupiter board's Ethernet or Wi-Fi link quality is below threshold”intermittent control messages.
+4_7,How can I test network strength?,"In the Service UI, open Network Diagnostics and run the ping/test view. A packet loss above 5% or ping >100 ms triggers the error."
 4_7,What can cause weak connectivity?,"Interference, damaged Ethernet cable, or poor Wi-Fi signal. Check for nearby devices on the same channel and inspect cable shielding for damage."
 4_7,How do I improve the network link?,"Switch to a different Ethernet port or move the Wi-Fi access point closer. If using Wi-Fi, consider adding a USB-to-Ethernet adapter for a wired fallback."
 4_7,When should I escalate to support?,"If ping tests remain poor after swapping cables and rebooting, export the Network Diagnostics report and open a ticket with QuickPick support."
 
-4_22,What does CAMERA_ISSUE mean?,"Error code 4_22 (CAMERA_ISSUE) is a catch-all for camera hardware or driver failures that can’t be classified as obstructed or offline."
-4_22,How can I differentiate from CAMERA_OFFLINE?,"Check Camera Preview—if you see static or corrupted frames, it’s a driver or sensor error (4_22) rather than a missing feed (4_6)."
-4_22,How do I update the camera driver?,"In the Service UI under “Software Updates,” select “Camera Driver” and apply the latest package. Reboot when prompted."
-4_22,What logs help with CAMERA_ISSUE?,"Export the “Camera” and “System” logs from Diagnostics—look for error codes in the image-capture routine."
-4_22,When is hardware replacement needed?,"If driver updates don’t resolve corrupted frames, contact support to schedule a camera module swap, including logs and error-code details."
+4_22,What does CAMERA_ISSUE mean?,Error code 4_22 (CAMERA_ISSUE) is a catch-all for camera hardware or driver failures that can't be classified as obstructed or offline.
+4_22,How can I differentiate from CAMERA_OFFLINE?,"Check Camera Preview- if you see static or corrupted frames, it's a driver or sensor error (4_22) rather than a missing feed (4_6)."
+4_22,How do I update the camera driver?,"In the Service UI under Software Updates, select Camera Driver and apply the latest package. Reboot when prompted."
+4_22,What logs help with CAMERA_ISSUE?,Export the Camera and System logs from Diagnostics”look for error codes in the image-capture routine.
+4_22,When is hardware replacement needed?,"If driver updates don't resolve corrupted frames, contact support to schedule a camera module swap, including logs and error-code details."
 
-4_28,What does LOCK_ISSUE mean?,"Error code 4_28 (LOCK_ISSUE) indicates a generic lock-control failure that isn’t purely timing (4_3) or abnormal state (4_4)."
+4_28,What does LOCK_ISSUE mean?,Error code 4_28 (LOCK_ISSUE) indicates a generic lock-control failure that isn't purely timing (4_3) or abnormal state (4_4).
 4_28,How do I distinguish it from LOCK_ABNORMAL?,"4_28 appears when the SW command to lock/unlock never completes, whereas 4_4 triggers when the sensed lock state mismatches expected state."
-4_28,What initial checks should I perform?,"Reboot the cooler, then test manual door release. If the door won’t move manually, suspect mechanical blockage; if it works manually, suspect SW/driver issues."
-4_28,Which logs cover LOCK_ISSUE?,"Export “Lock Control” logs under Diagnostics. These record the lock-command start/end times and error conditions."
+4_28,What initial checks should I perform?,"Reboot the cooler, then test manual door release. If the door won't move manually, suspect mechanical blockage; if it works manually, suspect SW/driver issues."
+4_28,Which logs cover LOCK_ISSUE?,Export Lock Control logs under Diagnostics. These record the lock-command start/end times and error conditions.
 4_28,When should I call support?,"If reboots and manual tests pass but 4_28 persists, gather the Lock Control logs and open a support ticket for a deeper firmware or hardware check."
 
-4_29,What does CAMERA_LOW_FRAMERATE mean?,"Error code 4_29 (CAMERA_LOW_FRAMERATE) means the camera is capturing below the 15 FPS minimum required for reliable recognition."
+4_29,What does CAMERA_LOW_FRAMERATE mean?,Error code 4_29 (CAMERA_LOW_FRAMERATE) means the camera is capturing below the 15 FPS minimum required for reliable recognition.
 4_29,What causes low framerate?,"High CPU load, USB bandwidth contention, or corrupted video driver can throttle the camera below 15 FPS."
-4_29,How do I measure current framerate?,"In Camera Preview mode, enable the FPS overlay in Diagnostics. If it reads below 15 FPS, you’ve confirmed the error."
-4_29,How can I improve framerate?,"Close unnecessary background tasks via “System Monitor,” ensure the camera uses a dedicated USB port, and update the video-capture driver from Software Updates."
+4_29,How do I measure current framerate?,"In Camera Preview mode, enable the FPS overlay in Diagnostics. If it reads below 15 FPS, you've confirmed the error."
+4_29,How can I improve framerate?,"Close unnecessary background tasks via System Monitor, ensure the camera uses a dedicated USB port, and update the video-capture driver from Software Updates."
 4_29,When do I escalate?,"If framerate remains low after freeing CPU and checking USB connections, export the System and Camera logs and contact QuickPick support for possible hardware replacement."
 
-4_30-4_32,What do codes 4_30–4_32 cover?,"Error codes 4_30 to 4_32 are grouped as LOCK_ISSUE variants covering communication, sensor, or actuator faults—refer to the main LOCK_ISSUE (4_28) flow for initial steps."
-4_30-4_32,How do I identify which sub-code I have?,"Check the exact code in the top-right corner of the Service UI’s error banner—4_30 is comms, 4_31 is sensor, 4_32 is actuator."
-4_30-4_32,What’s the first troubleshooting step?,"Always reboot the cooler and manually test the door. Then export the specific Lock Control logs under Diagnostics, which include sub-code details."
-4_30-4_32,How can I test the actuator?,"After power-down, disconnect the actuator cable and measure continuity with a multimeter. Then reconnect and run the “Open Door” command in Diagnostics → Hardware Test."
+4_30-4_32,What do codes 4_30“4_32 cover?,"Error codes 4_30 to 4_32 are grouped as LOCK_ISSUE variants covering communication, sensor, or actuator faults”refer to the main LOCK_ISSUE (4_28) flow for initial steps."
+4_30-4_32,How do I identify which sub-code I have?,"Check the exact code in the top-right corner of the Service UI's error banner”4_30 is comms, 4_31 is sensor, 4_32 is actuator."
+4_30-4_32,What's the first troubleshooting step?,"Always reboot the cooler and manually test the door. Then export the specific Lock Control logs under Diagnostics, which include sub-code details."
+4_30-4_32,How can I test the actuator?,"After power-down, disconnect the actuator cable and measure continuity with a multimeter. Then reconnect and run the Open Door command in Diagnostics ’ Hardware Test."
 4_30-4_32,When should I involve support?,"If sub-code logs show repeated failures after manual and reboot tests, open a ticket with QuickPick support including the lock-command logs."
 
-4_34,What does MACHINE_LOCKED mean?,"Error code 4_34 (MACHINE_LOCKED) indicates the kiosk is in a service-mode lockout—no sales or door actions are permitted until unlocked."
-4_34,How do I exit maintenance mode?,"In the Service UI, go to “Maintenance” → “Exit Service Mode,” enter your supervisor PIN, and confirm to resume normal operation."
-4_34,What PIN do I use to unlock?,"Use the site-specific supervisor PIN provided by your IT/admin team when the kiosk was deployed."
-4_34,Can I reset the supervisor PIN?,"If you’ve lost the PIN, contact QuickPick support with a photo of the kiosk’s serial-number barcode for remote reset instructions."
-4_34,What logs record the lockout event?,"Export the “System” logs; look for the MACHINE_LOCKED entry timestamp under the Service Mode category to correlate with user actions."
+4_34,What does MACHINE_LOCKED mean?,Error code 4_34 (MACHINE_LOCKED) indicates the kiosk is in a service-mode lockout”no sales or door actions are permitted until unlocked.
+4_34,How do I exit maintenance mode?,"In the Service UI, go to Maintenance ’ Exit Service Mode, enter your supervisor PIN, and confirm to resume normal operation."
+4_34,What PIN do I use to unlock?,Use the site-specific supervisor PIN provided by your IT/admin team when the kiosk was deployed.
+4_34,Can I reset the supervisor PIN?,"If you've lost the PIN, contact QuickPick support with a photo of the kiosk's serial-number barcode for remote reset instructions."
+4_34,What logs record the lockout event?,Export the System logs; look for the MACHINE_LOCKED entry timestamp under the Service Mode category to correlate with user actions.
 
-5_01,What does PREAUTH_AMOUNT_ERROR mean?,"Error code 5_01 (PREAUTH_AMOUNT_ERROR) means the payment pre-authorization amount requested doesn’t match the card-issuer’s limit or expected amount."
-5_01,How can I see the pre-auth amount attempted?,"In the Service UI under “Payment Logs,” find the transaction entry for 5_01 and view the “Requested Amount” vs. “Approved Amount.”"
-5_01,What should I try next?,"Have the user retry the payment with a different card or ask their bank to confirm card limits for micro-transactions."
-5_01,Where are payment logs stored?,"Export the “Payment” logs via Diagnostics → Export Logs. These include timestamps, card type, and amounts for each pre-auth."
-5_01,When do I contact support?,"If multiple cards fail with 5_01, export the Payment logs and submit a support ticket—include the card types (no PAN), timestamps, and log file."
+5_01,What does PREAUTH_AMOUNT_ERROR mean?,Error code 5_01 (PREAUTH_AMOUNT_ERROR) means the payment pre-authorization amount requested doesn't match the card-issuer's limit or expected amount.
+5_01,How can I see the pre-auth amount attempted?,"In the Service UI under Payment Logs, find the transaction entry for 5_01 and view the Requested Amount vs. Approved Amount."
+5_01,What should I try next?,Have the user retry the payment with a different card or ask their bank to confirm card limits for micro-transactions.
+5_01,Where are payment logs stored?,"Export the Payment logs via Diagnostics ’ Export Logs. These include timestamps, card type, and amounts for each pre-auth."
+5_01,When do I contact support?,"If multiple cards fail with 5_01, export the Payment logs and submit a support ticket”include the card types (no PAN), timestamps, and log file."
 
-5_02,What causes CREDENTIALS_EMPTY?,"Error code 5_02 (CREDENTIALS_EMPTY) means no payment credentials (card data or token) were received by the POS before authorization."
-5_02,How can I replicate the error?,"In the Service UI’s Payment Test, choose “Start Transaction” but select no payment method and observe the 5_02 error."
-5_02,What’s the fix for empty credentials?,"Ensure the card-reader or NFC antenna is unobstructed and that the reader is firmly connected to the PC board. Then retest."
-5_02,How do I update reader firmware?,"In Software Updates, select “Payment Reader,” apply the latest version, and reboot when prompted."
+5_02,What causes CREDENTIALS_EMPTY?,Error code 5_02 (CREDENTIALS_EMPTY) means no payment credentials (card data or token) were received by the POS before authorization.
+5_02,How can I replicate the error?,"In the Service UI's Payment Test, choose Start Transaction but select no payment method and observe the 5_02 error."
+5_02,What's the fix for empty credentials?,Ensure the card-reader or NFC antenna is unobstructed and that the reader is firmly connected to the PC board. Then retest.
+5_02,How do I update reader firmware?,"In Software Updates, select Payment Reader, apply the latest version, and reboot when prompted."
 5_02,When to escalate?,"If the reader still reports 5_02 after reconnections and firmware updates, export the Payment and System logs and contact support."
 
-5_03,What does CREDENTIALS_INVALID mean?,"Error code 5_03 (CREDENTIALS_INVALID) means the payment credentials were read but failed the issuer’s validation (e.g., bad token or expired card)."
+5_03,What does CREDENTIALS_INVALID mean?,"Error code 5_03 (CREDENTIALS_INVALID) means the payment credentials were read but failed the issuer's validation (e.g., bad token or expired card)."
 5_03,How can the user fix invalid credentials?,"Ask them to re-tap or swipe their card cleanly. If it fails again, try another card or check the expiration date."
-5_03,Where do I see the invalid reason?,"Check the Payment logs in Diagnostics; the card-issuer’s decline code will be listed under “Auth Response.”"
-5_03,How do I update tokenization settings?,"In Payment Settings, review the tokenization server URL and credentials—ensure they match your PCI-compliant gateway configuration."
+5_03,Where do I see the invalid reason?,Check the Payment logs in Diagnostics; the card-issuer's decline code will be listed under Auth Response.
+5_03,How do I update tokenization settings?,"In Payment Settings, review the tokenization server URL and credentials”ensure they match your PCI-compliant gateway configuration."
 5_03,When should I call support?,"If valid cards still get 5_03, submit Payment logs and decline codes to QuickPick support for gateway-side investigation."
 
-6_01,What does POS_NETWORK_ERROR mean?,"Error code 6_01 (POS_NETWORK_ERROR) indicates the kiosk can’t reach the payment gateway due to network issues."
-6_01,How do I test POS connectivity?,"In Diagnostics → Network Test, run the “Endpoint Ping” for your payment gateway URL and note any failures or high latency."
+6_01,What does POS_NETWORK_ERROR mean?,Error code 6_01 (POS_NETWORK_ERROR) indicates the kiosk can't reach the payment gateway due to network issues.
+6_01,How do I test POS connectivity?,"In Diagnostics ’ Network Test, run the Endpoint Ping for your payment gateway URL and note any failures or high latency."
 6_01,What network settings matter?,"Ensure DNS is resolving your gateway host, that the correct proxy (if any) is configured in Network Settings, and that port 443 is open."
-6_01,How can I switch to cellular fallback?,"If your kiosk has a cellular modem: in Network Settings enable “Cellular Failover” and verify the SIM plan is active in the admin portal."
+6_01,How can I switch to cellular fallback?,If your kiosk has a cellular modem: in Network Settings enable Cellular Failover and verify the SIM plan is active in the admin portal.
 6_01,When to escalate?,"If pings fail after router checks and fallback is configured, export Network and Payment logs and open a ticket with QuickPick support."
 
-6_02,What does WEBSOCKET_DISCONNECTED mean?,"Error code 6_02 (WEBSOCKET_DISCONNECTED) means the live payment-status channel to your backend was severed unexpectedly."
-6_02,How can I reestablish the websocket?,"In the Service UI under “Payment Settings,” click “Reconnect WebSocket.” This forces a fresh handshake with the server."
-6_02,What logs record websocket errors?,"Export the “WebSocket” logs under Diagnostics—look for disconnect timestamps and error messages indicating timeouts or SSL issues."
-6_02,How do I check SSL certs?,"Ensure your kiosk’s system clock is correct in BasicInfo; then verify the SSL certificate installed for the websocket endpoint is not expired."
+6_02,What does WEBSOCKET_DISCONNECTED mean?,Error code 6_02 (WEBSOCKET_DISCONNECTED) means the live payment-status channel to your backend was severed unexpectedly.
+6_02,How can I reestablish the websocket?,"In the Service UI under Payment Settings, click Reconnect WebSocket. This forces a fresh handshake with the server."
+6_02,What logs record websocket errors?,Export the WebSocket logs under Diagnostics”look for disconnect timestamps and error messages indicating timeouts or SSL issues.
+6_02,How do I check SSL certs?,Ensure your kiosk's system clock is correct in BasicInfo; then verify the SSL certificate installed for the websocket endpoint is not expired.
 6_02,When should I contact support?,"If reconnect attempts keep failing, gather WebSocket and System logs and contact QuickPick support for deeper network or server-side analysis."
 
-7_01,What does CHECKING mean?,"Error code 7_01 (CHECKING) indicates the kiosk is performing its self-check routine at boot or after a major event."
-7_01,How long does CHECKING typically take?,"The self-check usually completes within 30–45 seconds, running power, sensor, and peripheral diagnostics."
+7_01,What does CHECKING mean?,Error code 7_01 (CHECKING) indicates the kiosk is performing its self-check routine at boot or after a major event.
+7_01,How long does CHECKING typically take?,"The self-check usually completes within 30“45 seconds, running power, sensor, and peripheral diagnostics."
 7_01,What should I do if it never finishes?,"If CHECKING hangs past 2 minutes, power-cycle the cooler. If it still hangs, export the System logs and contact support."
-7_01,Where are self-check results stored?,"After the check, view “Diagnostics” → “Self-Check Report” to see pass/fail results for each subsystem."
-7_01,Can I skip self-check?,"No—self-check is mandatory on boot. Skipping it can leave hardware unverified and may void support SLA."
+7_01,Where are self-check results stored?,"After the check, view Diagnostics ’ Self-Check Report to see pass/fail results for each subsystem."
+7_01,Can I skip self-check?,No”self-check is mandatory on boot. Skipping it can leave hardware unverified and may void support SLA.
 
 
-----------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
 3_03,How to confirm SW version?,"Hello! To confirm the software version, follow these steps:\n\n1. Log in to the Service UI.\n2. Go to the ""BasicInfo"" section.\n3. Check the ""Software Version"" field."
 3_03,What causes OPEN_LOCK_FAIL_TIMEOUT?,"Lock abnormal means that the Jupiter senses the lock but the default state is not as expected. This usually occurs when the lock engagement is either physically blocked or the RFID pairing is not set. If the HW is problematic, lock needs to be replaced. Cable assembly damage is the least likely root cause./nLock abnormal could also mean that the SW is not set to control this lock. If the SW is problematic, SW needs to be updated."
 3_03,How to troublshoot?,Start by rebooting the cooler.
-3_03,I've re‑paired the RFID and repeated the previous tests; what's next?,"Cycle through Steps 1–5 until each one passes. If all items PASS but the OPEN_LOCK_FAIL_TIMEOUT error still appears, the lock hardware itself may be faulty. At that point, replace the lock mechanism or escalate to your CV company’s advanced support for deeper diagnostics."
-3_03,I've ensured the lock cable is properly connected; what's next?,"Next, confirm the RFID pairing: open the FQC App and view the pairing between the reader and tag. If the reader and tag IDs match, the pairing is correct. If they differ, re‑pair them per the CV company’s procedure or contact CV support for assistance. Once re‑paired, repeat the lock‑signal functionality test in the Service UI."
-3_03,I've verified the lock disengages via the Service UI; what's next?,"Inspect the lock cable assembly: power off the cooler and remove the control‑box cover. Using the electrical diagram on the cover and the PC sticker as guides, locate the cable labeled “LOCK.” Confirm the connector is fully seated on the Jupiter and tighten as needed. If the cable insulation or connector shows damage, replace the entire assembly before moving on."
-3_03,I've confirmed the software version is correct; what's next?,"Now test the lock and lock‑signal functionality to rule out mechanical blockage: physically open the door by pulling the handle. If the lock remains engaged, access the Service UI, tap “Operation,” then “Open Door.” If the lock disengages on command, the lock mechanism and control signal are functioning properly."
-3_03,I've rebooted the cooler; what's next?,"Lock abnormal means the Jupiter senses the lock but its default state isn’t as expected—often due to software control or physical blockage. Next, confirm the software version: open the Service UI and navigate to the BasicInfo section. Verify the SW version; if it’s incorrect, take a photo of the BasicInfo screen and contact the CV company to get the proper update. After updating, return to BasicInfo and ensure the new version is displayed before proceeding."
-3_03,How to troubleshoot?,"Start by rebooting the cooler. Press the GFCI’s RESET button, unplug and re-plug the mains cord, then open the Service UI → “Reboot” dialog."
+3_03,I've re‘paired the RFID and repeated the previous tests; what's next?,"Cycle through StepsÂ 1“5 until each one passes. If all items PASS but the OPEN_LOCK_FAIL_TIMEOUT error still appears, the lock hardware itself may be faulty. At that point, replace the lock mechanism or escalate to your CV company's advanced support for deeper diagnostics."
+3_03,I've ensured the lock cable is properly connected; what's next?,"Next, confirm the RFID pairing: open the FQC App and view the pairing between the reader and tag. If the reader and tag IDs match, the pairing is correct. If they differ, re‘pair them per the CV company's procedure or contact CV support for assistance. Once re‘paired, repeat the lock‘signal functionality test in the Service UI."
+3_03,I've verified the lock disengages via the Service UI; what's next?,"Inspect the lock cable assembly: power off the cooler and remove the control‘box cover. Using the electrical diagram on the cover and the PC sticker as guides, locate the cable labeled LOCK. Confirm the connector is fully seated on the Jupiter and tighten as needed. If the cable insulation or connector shows damage, replace the entire assembly before moving on."
+3_03,I've confirmed the software version is correct; what's next?,"Now test the lock and lock‘signal functionality to rule out mechanical blockage: physically open the door by pulling the handle. If the lock remains engaged, access the Service UI, tap Operation, then Open Door. If the lock disengages on command, the lock mechanism and control signal are functioning properly."
+3_03,I've rebooted the cooler; what's next?,"Lock abnormal means the Jupiter senses the lock but its default state isn't as expected”often due to software control or physical blockage. Next, confirm the software version: open the Service UI and navigate to the BasicInfo section. Verify the SW version; if it's incorrect, take a photo of the BasicInfo screen and contact the CV company to get the proper update. After updating, return to BasicInfo and ensure the new version is displayed before proceeding."
+3_03,How to troubleshoot?,"Start by rebooting the cooler. Press the GFCI's RESET button, unplug and re-plug the mains cord, then open the Service UI ’ Reboot dialog."

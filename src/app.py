@@ -7,22 +7,12 @@ from typing import List, Dict, Any
 from PIL import Image
 
 import streamlit as st
-import chromadb
-from chromadb.config import Settings
-from chromadb import Client
-client = chromadb.Client(
-    Settings(
-        chroma_db_impl="duckdb+parquet",
-        persist_directory="vectorstore"
-    )
-)
-store = client.get_collection("errors")
+from chromadb import PersistentClient
 from langchain_core.messages import HumanMessage, AIMessage
 from sentence_transformers import SentenceTransformer
 from numpy import dot
 from numpy.linalg import norm
 from llama_cpp import Llama
-from transformers.pipelines import pipeline
 
 from prompt_templates import SYSTEM_TEMPLATE, build_prompt
 from feedback_db import save as save_feedback          
@@ -58,39 +48,24 @@ MEM_TURNS  = 8
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
 @st.cache_resource(show_spinner="Loading LLaMA…")
-#def load_llm():
-#    return Llama(
-#        model_path=MODEL_PATH,
-#        lora_adapter=LORA_PATH if Path(LORA_PATH).exists() else None,
-#        n_ctx=8192,
-#        n_gpu_layers=-1,
-#        verbose=False,
-#    )
-def load_hf_pipe():
-    return pipeline(
-        task="text-generation",
-        model="elinas/Llama-3-13B-Instruct",
-        trust_remote_code=True,
-        device="mps",  # or device=0 for CUDA
+def load_llm():
+    return Llama(
+        model_path=MODEL_PATH,
+        lora_adapter=LORA_PATH if Path(LORA_PATH).exists() else None,
+        n_ctx=8192,
+        n_gpu_layers=-1,
+        verbose=False,
     )
 
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
-    client = Client(
-        Settings(
-            chroma_db_impl="duckdb+parquet",     # or "sqlite" if you still have a compliant SQLite
-            persist_directory=VECTOR_DIR,
-        )
-    )
-    # get_or_create_collection will create “errors” if it doesn’t already exist
-    return client.get_or_create_collection("errors")
+    return PersistentClient(path=VECTOR_DIR).get_collection("errors")
 
 @st.cache_resource(show_spinner="Loading embedder…")
 def load_embedder():
     return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="mps")
 
-#llm      = load_llm()
-hf_pipe  = load_hf_pipe()
+llm      = load_llm()
 store    = load_store()
 embedder = load_embedder()
 
@@ -109,7 +84,7 @@ def click_fup(q: str):
 
 def count_similar_questions(q: str, questions: List[str], threshold: int = 90) -> int:
     """
-    Returns how many strings in `questions` have a token_set_ratio ≥ threshold
+    Returns how many strings in questions have a token_set_ratio ≥ threshold
     when compared to q.
     """
     return sum(
@@ -467,7 +442,7 @@ if st.session_state.pending_q:
     # if they’ve asked “the same” >3 times, escalate
     if repeat_count > 2:
         st.session_state.history.append(
-            AIMessage(content="Thank you for your patience. Please contact the QuikPick team. You will need a photo of the Service UI BasicInfo section and the Jupiter PCSN. Ensure you mention the error code to the team.")
+            AIMessage(content="Contact QuikPick support staff at (123) 456-7890")
         )
         # clear the “thinking” flag so we don’t lock the input
         st.session_state.is_thinking = False
@@ -496,25 +471,14 @@ if st.session_state.pending_q:
             m.content for m in st.session_state.history[-MEM_TURNS:]
         )
         prompt = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
-        #resp   = llm(
-        #    prompt,
-        #    max_tokens=MAX_TOKENS,
-        #    temperature=0.2,
-        #    top_p=0.95,
-        #    stop=["<END>"],
-        #)
-        outputs = hf_pipe(
+        resp   = llm(
             prompt,
-            max_new_tokens=MAX_TOKENS,
+            max_tokens=MAX_TOKENS,
             temperature=0.2,
             top_p=0.95,
-            #eos_token_id=hf_pipe.tokenizer.eos_token_id,
-            return_full_text=False,
+            stop=["<END>"],
         )
-        # `outputs` is a list of {"generated_text": ...}
-        raw = outputs[0]["generated_text"].strip()
-
-
+        raw    = resp["choices"][0]["text"].strip()  # type: ignore
         if "<END>" in raw:
             raw = raw.split("<END>", 1)[0].rstrip()
 
@@ -543,6 +507,6 @@ for kind, payload in st.session_state.pop("to_log", []):
         log_negative(*payload)   # type: ignore[arg-type]
 
 # 5) Reset
-if st.button("🔄 Start over"):
+if st.button("Start over"):
     st.session_state.clear()
     _rerun()
