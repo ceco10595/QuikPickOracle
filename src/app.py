@@ -1,7 +1,7 @@
 # pyright: reportAttributeAccessIssue=false, reportArgumentType=false
 # src/app.py
 import re
-import csv
+import csv, os
 from pathlib import Path
 from typing import List, Dict, Any
 from PIL import Image
@@ -19,6 +19,7 @@ from feedback_db import save as save_feedback
 from feedback_db import _append_positive, _append_negative  
 from rapidfuzz import fuzz, process 
 from streamlit_feedback import streamlit_feedback
+from huggingface_hub import hf_hub_download
 st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
 st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
 st.session_state.setdefault("pending_q", None)
@@ -124,6 +125,14 @@ def _rerun():
     else:
         st.experimental_rerun()
 
+@st.cache_resource(show_spinner="Downloading model from Hugging Face…")
+def fetch_model_from_hf() -> str:
+    repo_id  = os.environ.get("HF_REPO", "QuickPick/quikpick-llama3-13b-gguf")
+    filename = os.environ.get("HF_FILENAME", "models/llama-3-13b-Instruct-Q4_K_M.gguf")
+    return hf_hub_download(repo_id=repo_id, filename=filename, cache_dir="models")
+
+# override the constant
+MODEL_PATH = fetch_model_from_hf()
 # ── HELPERS ─────────────────────────────────────────────────────────────────
 QA_PATH = Path("data/sample_qa.csv")
 
