@@ -1,5 +1,5 @@
 pysqlite3-binary>=0.5.4
-chromadb>=1.0.15
+chromadb
 langchain_core
 sentence_transformers
 rapidfuzz
@@ -8,4 +8,4 @@ huggingface-hub>=0.26.0
 transformers>=4.45.0
 torch>=2.3.0
 safetensors
-accelerate
+accelerate>=0.20.3

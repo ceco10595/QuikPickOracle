@@ -5,6 +5,7 @@ import sys
 # replace the built‑in sqlite3 module with pysqlite3
 __import__('pysqlite3') 
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 import re
 import csv, os
 from pathlib import Path
@@ -22,8 +23,7 @@ from feedback_db import save as save_feedback
 from feedback_db import _append_positive, _append_negative  
 from rapidfuzz import fuzz, process 
 from streamlit_feedback import streamlit_feedback
-from chromadb import Client
-from chromadb.config import Settings
+from chromadb import PersistentClient
 from huggingface_hub import InferenceClient
 
 import torch
@@ -68,10 +68,8 @@ def load_llm():
     MODEL_ID = "MaziyarPanahi/Llama-3-13B-Instruct-v0.1"
 
     # instead of loading locally, use the HF Inference API
-    client = InferenceClient(
-        model=MODEL_ID,
-        token=token
-    )
+    client = InferenceClient(model=MODEL_ID, token=token)
+
     return client
 
 def run_llm(prompt: str) -> str:
@@ -83,7 +81,8 @@ def run_llm(prompt: str) -> str:
             "temperature":     0.2,
             "top_p":           0.95,
         },
-    )
+    ) # type: ignore
+
     # response can be a list or a dict
     if isinstance(resp, list):
         text = resp[0].get("generated_text", "")
@@ -93,12 +92,10 @@ def run_llm(prompt: str) -> str:
 
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
-    settings = Settings(
-        chroma_db_impl="duckdb+parquet",
-        persist_directory=VECTOR_DIR
-    )
-    client = Client(settings)
-    return client.get_collection("errors")
+    # use the new PersistentClient API (no Settings needed)
+    client = PersistentClient(path=VECTOR_DIR)
+    # will create the “errors” collection if it doesn’t exist
+    return client.get_or_create_collection(name="errors")
 
 @st.cache_resource(show_spinner="Loading embedder…")
 def load_embedder():
