@@ -5,7 +5,6 @@ import sys
 # replace the built‑in sqlite3 module with pysqlite3
 __import__('pysqlite3') 
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
 import re
 import csv, os
 from pathlib import Path
@@ -66,29 +65,24 @@ MEM_TURNS  = 8
 def load_llm():
     token    = st.secrets["hf"]["api_token"]
     MODEL_ID = "MaziyarPanahi/Llama-3-13B-Instruct-v0.1"
-
-    # instead of loading locally, use the HF Inference API
-    client = InferenceClient(model=MODEL_ID, token=token)
-
-    return client
+    # note: InferenceClient takes `model=` not `repo_id=`
+    return InferenceClient(model=MODEL_ID, token=token)
 
 def run_llm(prompt: str) -> str:
-    # The prompt must be passed positionally, not as `inputs=`
+    # call the remote HF text-generation endpoint with the right signature
     resp = llm.text_generation(
-        prompt,  # ← no `inputs=` here
-        parameters={
-            "max_new_tokens": MAX_TOKENS,
-            "temperature":     0.2,
-            "top_p":           0.95,
-        },
+        prompt,
+        max_new_tokens=MAX_TOKENS,
+        temperature=0.2,
+        top_p=0.95,
     )
-
-    # handle either list or dict return
-    if isinstance(resp, list):
+    # resp can be dict, list of dicts, or a raw string
+    if isinstance(resp, dict):
+        text = resp.get("generated_text", "")
+    elif isinstance(resp, list) and isinstance(resp[0], dict):
         text = resp[0].get("generated_text", "")
     else:
-        text = resp.get("generated_text", "")
-
+        text = str(resp)
     return text.strip()
 
 @st.cache_resource(show_spinner="Opening vector store…")
