@@ -1,2 +1,4 @@
 [theme]
-base                       = "system"
+base="system"
+primaryColor = "#005CB4"       
+font="sans serif"
