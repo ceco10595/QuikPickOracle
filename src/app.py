@@ -98,7 +98,25 @@ def click_fup(q: str):
             break
     st.session_state.next_q = q
 
+def get_answer(prompt: str, *, max_retry: int = 1) -> str:
+    """
+    Call run_llm(prompt). If the reply begins with '### Follow-Up' (or any
+    case‑variant), request a new answer once. Returns the final text.
+    """
+    raw = run_llm(prompt)
 
+    tries = 0
+    while raw.lstrip().lower().startswith("### follow-up") and tries < max_retry:
+        tries += 1
+        raw = run_llm(
+            prompt
+            + "\n\n### Oracle Note\n"
+            + "Your previous reply started with the Follow‑Up header and did not "
+            + "contain an answer. Please begin with a complete answer first, then "
+            + "add the Follow‑Up block."
+        )
+
+    return raw
 
 def count_similar_questions(q: str, questions: List[str], threshold: int = 90) -> int:
     """
@@ -488,7 +506,7 @@ if st.session_state.pending_q:
         )
         prompt = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
         # call HF Inference API instead of local llama
-        raw = run_llm(prompt)
+        raw = get_answer(prompt)
 
         if "<END>" in raw:
             raw = raw.split("<END>", 1)[0].rstrip()
