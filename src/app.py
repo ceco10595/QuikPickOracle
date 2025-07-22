@@ -562,5 +562,5 @@ col1, col2, col3 = st.columns(3)
 with col2:                       # middle column → centred
     if st.button("↻"):
         st.session_state.clear()
-        st.experimental_rerun()   # or your _rerun()
+        st.rerun()   # or your _rerun()
 
