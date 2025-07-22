@@ -81,7 +81,7 @@ def load_store():
 
 @st.cache_resource(show_spinner="Loading embedder…")
 def load_embedder():
-    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="mps")
+    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="cpu")
 
 llm      = load_llm()
 store    = load_store()
