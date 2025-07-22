@@ -1,7 +1,7 @@
 [theme]
-base                       = "light"
+#base                       = "light"
 
-# ① Dark Pepsi blue – the arrow in “QU➤IK”
+# ① Dark Pepsi blue – the word in “QUIK”
 primaryColor               = "#005CB4"
 
 # ② Sky‑blue – the word “PICK”
