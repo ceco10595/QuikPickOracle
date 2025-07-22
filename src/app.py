@@ -492,6 +492,30 @@ if st.session_state.pending_q:
 
         if "<END>" in raw:
             raw = raw.split("<END>", 1)[0].rstrip()
+        
+        max_regen = 1
+        while True:
+            # split answer vs follow‑ups
+            main_ans, llm_fups = (raw.split("### Follow-Up", 1) + [""])[:2]
+            main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
+
+            # valid answer → break the loop
+            if main_ans:
+                break
+
+            # empty answer: ask once more, then accept whatever we get
+            if max_regen == 0:
+                main_ans, llm_fups = raw.strip(), ""
+                break
+
+            max_regen -= 1
+            raw = run_llm(
+                prompt
+                + "\n\n### Oracle Note\n"
+                + "Your previous reply began with the Follow‑Up header and contained "
+                + "no answer. Please regenerate: begin with a complete answer first, "
+                + "then the Follow‑Up block."
+            )
 
     main_ans, llm_fups = (raw.split("### Follow-Up", 1) + [""])[:2]
     main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
