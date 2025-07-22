@@ -1,9 +1,8 @@
 # pyright: reportAttributeAccessIssue=false, reportArgumentType=false
 # src/app.py
-# force sqlite3 to use the pip-installed bundle
-__import__("pysqlite3")
+# ── FORCE Chroma to use our pip‑installed sqlite3 ─────────────────────────────
 import sys
-sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+# replace the built‑in sqlite3 module with pysqlite3
 import re
 import csv, os
 from pathlib import Path
@@ -15,7 +14,6 @@ from langchain_core.messages import HumanMessage, AIMessage
 from sentence_transformers import SentenceTransformer
 from numpy import dot
 from numpy.linalg import norm
-from huggingface_hub import InferenceApi
 
 from prompt_templates import SYSTEM_TEMPLATE, build_prompt
 from feedback_db import save as save_feedback          
@@ -25,6 +23,13 @@ from streamlit_feedback import streamlit_feedback
 from chromadb import Client
 from chromadb.config import Settings
 
+import torch
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    TextStreamer, #type: ignore
+    pipeline, #type: ignore
+)
 st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
 st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
 st.session_state.setdefault("pending_q", None)
@@ -53,14 +58,48 @@ MAX_TOKENS = 256
 MEM_TURNS  = 8
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
-@st.cache_resource(show_spinner="Connecting to Hugging Face…")
+@st.cache_resource(show_spinner="Loading LLaMA‑3 Instruct…")
 def load_llm():
-    return InferenceApi(
-        repo_id="meta-llama/Llama-3-13b-Instruct",      # or your preferred HF repo
-        token=st.secrets["hf"]["api_token"],
+    MODEL_ID = "MaziyarPanahi/Llama-3-13B-Instruct-v0.1"
+
+    # tokenizer + model
+    tokenizer = AutoTokenizer.from_pretrained(
+        MODEL_ID,
+        trust_remote_code=True,
+    )
+    model = AutoModelForCausalLM.from_pretrained(
+        MODEL_ID,
+        torch_dtype=torch.float16,
+        device_map="auto",
+        trust_remote_code=True,
     )
 
-llm = load_llm()
+    # streaming helper
+    streamer = TextStreamer(
+        tokenizer,
+        skip_prompt=True,
+        skip_special_tokens=True,
+    )
+
+    return pipeline(
+        "text-generation",
+        model=model,
+        tokenizer=tokenizer,
+        streamer=streamer,
+    )
+def run_llm(prompt: str) -> str:
+    # pipeline will drop the prompt for us when streamer=TextStreamer
+    out = llm(
+        prompt,
+        max_new_tokens=MAX_TOKENS,
+        do_sample=True,
+        temperature=0.2,
+        top_p=0.95,
+    )
+    full = out[0]["generated_text"]
+    # strip off the original prompt
+    return full[len(prompt):].strip()
+
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
     settings = Settings(
@@ -482,18 +521,7 @@ if st.session_state.pending_q:
         )
         prompt = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
 
-        response = llm(
-            inputs=prompt,
-            params={
-                "max_new_tokens": MAX_TOKENS,
-                "temperature": 0.2,
-                "top_p": 0.95,
-                "stop": ["<END>"],
-            }
-        )
-
-        # HF returns your text under "generated_text"
-        raw = response.get("generated_text", "")
+        raw = run_llm(prompt)
 
         # strip off your stop token
         if "<END>" in raw:

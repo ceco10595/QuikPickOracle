@@ -4,3 +4,7 @@ langchain_core
 sentence_transformers
 rapidfuzz
 streamlit-feedback
+huggingface-hub>=0.26.0
+transformers>=4.45.0
+torch>=2.3.0
+safetensors
