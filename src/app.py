@@ -47,7 +47,7 @@ with col2:
 LORA_PATH  = "models/lora-adapter"
 VECTOR_DIR = "vectorstore"
 ERROR_RE   = re.compile(r"^\d+_\d+$")
-MAX_TOKENS = 256
+MAX_TOKENS = 512
 MEM_TURNS  = 8
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
