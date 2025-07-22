@@ -260,49 +260,21 @@ if st.session_state.code is None:
     st.stop()
 
 # 2) Banner (fixed backtick removed)
-# ── Drop this near the top, with your other CSS ───────────────────────────
+# ── Brand card styling (put just once) ───────────────────────
 st.markdown(
     """
     <style>
-    /* card wrapper */
     .qp-card       {background:#F2F8FC;padding:1.2rem 1.4rem;
-                    border-radius:0.6rem;margin:0 0 1.2rem 0;}
-    /* the three rows */
+                    border-radius:0.6rem;margin-bottom:1.2rem;}
     .qp-code       {font-size:1.4rem;font-weight:700;color:#005CB4;}
     .qp-message    {font-size:1.05rem;font-weight:600;color:#194481;}
     .qp-solution   {margin-top:0.6rem;color:#194481;}
-    /* nice bullet list for multi‑line solutions */
     .qp-solution ul{margin:0 0 0.2rem 1.2rem;padding:0;}
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# ── Replace your current expander block with this call ────────────────────
-def show_error_details(meta: dict):
-    """
-    Render a friendly, colour‑themed card for the main error doc.
-    """
-    code     = meta["ErrorCode"]
-    message  = meta.get("Message", "—")
-    solution = meta.get("Solution", "—")
-
-    # convert \n to HTML list items if multiple lines
-    bullets = "".join(f"<li>{line.strip()}</li>"
-                      for line in solution.splitlines() if line.strip())
-
-    st.markdown(
-        f"""
-        <div class="qp-card">
-            <div class="qp-code">⚠️ Error {code}</div>
-            <div class="qp-message">{message}</div>
-            <div class="qp-solution">
-                <ul>{bullets or '<li>(no solution text)</li>'}</ul>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 # display the first step one of the error code
 if st.session_state.step_counter == 0:
     # find the canned follow‑up for Step 1 of this code
