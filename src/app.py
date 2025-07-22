@@ -73,21 +73,22 @@ def load_llm():
     return client
 
 def run_llm(prompt: str) -> str:
-    # call the remote HF text-generation endpoint
+    # The prompt must be passed positionally, not as `inputs=`
     resp = llm.text_generation(
-        inputs=prompt,
+        prompt,  # ← no `inputs=` here
         parameters={
             "max_new_tokens": MAX_TOKENS,
             "temperature":     0.2,
             "top_p":           0.95,
         },
-    ) # type: ignore
+    )
 
-    # response can be a list or a dict
+    # handle either list or dict return
     if isinstance(resp, list):
         text = resp[0].get("generated_text", "")
     else:
         text = resp.get("generated_text", "")
+
     return text.strip()
 
 @st.cache_resource(show_spinner="Opening vector store…")
@@ -99,7 +100,7 @@ def load_store():
 
 @st.cache_resource(show_spinner="Loading embedder…")
 def load_embedder():
-    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="mps")
+    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="auto")
 
 llm      = load_llm()
 store    = load_store()
