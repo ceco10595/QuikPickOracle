@@ -538,29 +538,7 @@ for kind, payload in st.session_state.pop("to_log", []):
     else:
         log_negative(*payload)   # type: ignore[arg-type]
 
-import streamlit as st
-
-# ------ 1) one‑time CSS tweak ---------------------------------
-st.markdown(
-    """
-    <style>
-    /* Make ALL Streamlit buttons shrink‑to‑fit and turn the text blue.
-       Remove the min‑width that Streamlit normally enforces. */
-    div.stButton > button {
-        color: royalblue !important;   /* text colour            */
-        width: auto !important;        /* shrink to label width  */
-        min-width: 0 !important;       /* override Streamlit min */
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ------ 2) draw the centred button ----------------------------
-col1, col2, col3 = st.columns(3)
-
-with col2:                       # middle column → centred
-    if st.button("↻ Restart"):
-        st.session_state.clear()
-        st.rerun()   # or your _rerun()
-
+# 5) Reset
+if st.button("↻ Restart"):
+    st.session_state.clear()
+    _rerun()
