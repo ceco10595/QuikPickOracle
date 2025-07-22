@@ -61,29 +61,30 @@ MEM_TURNS  = 8
 
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
+# ── CACHES ───────────────────────────────────────────────────────────────
 @st.cache_resource(show_spinner="Connecting to HF Inference API…")
-def load_llm():
+def load_llm() -> InferenceClient:
     token    = st.secrets["hf"]["api_token"]
-    MODEL_ID = "MaziyarPanahi/Llama-3-13B-Instruct-v0.1"
-    # note: InferenceClient takes `model=` not `repo_id=`
+    MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"      # or 13B if you deploy it
     return InferenceClient(model=MODEL_ID, token=token)
 
 def run_llm(prompt: str) -> str:
-    # call the remote HF text-generation endpoint with the right signature
-    resp = llm.text_generation(
-        prompt,
-        max_new_tokens=MAX_TOKENS,
+    """
+    Call the chat‑completion endpoint (supported by the novita provider).
+    We wrap our whole prompt into a single user turn; adjust `system`
+    if you want a separate system message.
+    """
+    resp = llm.chat_completion(
+        messages=[
+            {"role": "system", "content": "You are QuikPick Oracle."},
+            {"role": "user",   "content": prompt},
+        ],
+        max_tokens=MAX_TOKENS,
         temperature=0.2,
         top_p=0.95,
     )
-    # resp can be dict, list of dicts, or a raw string
-    if isinstance(resp, dict):
-        text = resp.get("generated_text", "")
-    elif isinstance(resp, list) and isinstance(resp[0], dict):
-        text = resp[0].get("generated_text", "")
-    else:
-        text = str(resp)
-    return text.strip()
+    # `resp` is a dataclass; the text is in the first choice
+    return resp.choices[0].message.content.strip()
 
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
