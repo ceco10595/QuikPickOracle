@@ -560,7 +560,7 @@ st.markdown(
 col1, col2, col3 = st.columns(3)
 
 with col2:                       # middle column → centred
-    if st.button("↻"):
+    if st.button("↻ Restart"):
         st.session_state.clear()
         st.rerun()   # or your _rerun()
 
