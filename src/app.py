@@ -25,6 +25,7 @@ from rapidfuzz import fuzz, process
 from streamlit_feedback import streamlit_feedback
 from chromadb import Client
 from chromadb.config import Settings
+from huggingface_hub import InferenceClient
 
 import torch
 from transformers import (
@@ -61,47 +62,27 @@ MAX_TOKENS = 256
 MEM_TURNS  = 8
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
-@st.cache_resource(show_spinner="Loading LLaMA‑3 Instruct…")
+@st.cache_resource(show_spinner="Connecting to HF Inference API…")
 def load_llm():
-    MODEL_ID = "MaziyarPanahi/Llama-3-13B-Instruct-v0.1"
-
-    # tokenizer + model
-    tokenizer = AutoTokenizer.from_pretrained(
-        MODEL_ID,
-        trust_remote_code=True,
-    )
-    model = AutoModelForCausalLM.from_pretrained(
-        MODEL_ID,
-        torch_dtype=torch.float16,
-        device_map="auto",
-        trust_remote_code=True,
+    token = st.secrets["hf"]["api_token"]
+    # replace with any public Llama‑3‑Instruct repo that has an inference endpoint
+    return InferenceClient(
+        repo_id="MaziyarPanahi/Llama-3-13B-Instruct-v0.1",
+        token=token
     )
 
-    # streaming helper
-    streamer = TextStreamer(
-        tokenizer,
-        skip_prompt=True,
-        skip_special_tokens=True,
-    )
-
-    return pipeline(
-        "text-generation",
-        model=model,
-        tokenizer=tokenizer,
-        streamer=streamer,
-    )
 def run_llm(prompt: str) -> str:
-    # pipeline will drop the prompt for us when streamer=TextStreamer
-    out = llm(
-        prompt,
+    # call HF Inference API
+    out = llm.text_generation(
+        inputs=prompt,
         max_new_tokens=MAX_TOKENS,
-        do_sample=True,
-        temperature=0.2,
+        do_sample=True,       # optional sampling
         top_p=0.95,
+        temperature=0.2
     )
-    full = out[0]["generated_text"]
-    # strip off the original prompt
-    return full[len(prompt):].strip()
+    # `.generated_text` has the full reply including the prompt; strip it off:
+    gen = out.generated_text
+    return gen[len(prompt):].lstrip()
 
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
