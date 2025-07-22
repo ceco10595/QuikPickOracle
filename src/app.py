@@ -460,7 +460,7 @@ if st.session_state.pending_q:
     # if they’ve asked “the same” >3 times, escalate
     if repeat_count > 2:
         st.session_state.history.append(
-            AIMessage(content="Thank you for your patience. \nPlease contact the QuikPick team. \nYou will need: \n1. A photo of the Service UI BasicInfo section \n2. the Jupiter PCSN. \nEnsure you mention the error code to the team")
+            AIMessage(content="Thank you for your patience. \n\nPlease contact the QuikPick team. \nYou will need: \n1. A photo of the Service UI BasicInfo section \n2. the Jupiter PCSN. \n\nEnsure you mention the error code to the team")
         )
         # clear the “thinking” flag so we don’t lock the input
         st.session_state.is_thinking = False
