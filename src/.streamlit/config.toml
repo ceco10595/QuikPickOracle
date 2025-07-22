@@ -1,4 +1,18 @@
 [theme]
-base="light"
-primaryColor = "#005CB4"       
-font="sans serif"
+base                       = "light"
+
+# ① Dark Pepsi blue – the arrow in “QU➤IK”
+primaryColor               = "#005CB4"
+
+# ② Sky‑blue – the word “PICK”
+accentColor                = "#63A9DF"
+
+# ③ Very‑pale version of the sky‑blue for cards & sidebar
+secondaryBackgroundColor   = "#F2F8FC"
+
+# ④ Main page background (matches the logo’s white)
+backgroundColor            = "#FFFFFF"
+
+# ⑤ Deep navy text for good contrast on white/tint backgrounds
+textColor                  = "#194481"
+font                       = "sans serif"
