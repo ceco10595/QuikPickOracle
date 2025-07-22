@@ -282,7 +282,7 @@ st.markdown(
 )
 
 main = next(d for d in st.session_state.docs if "Message" in d["meta"])
-with st.expander("Error‑code details", expanded=True):
+with st.expander("Error‑code details", expanded=False):
     st.markdown(
         f"""
         <div class="error-details">
