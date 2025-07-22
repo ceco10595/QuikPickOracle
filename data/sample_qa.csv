@@ -55,7 +55,7 @@ ErrorCode,Question,Answer
 3_06,What does CAMERA_OBSTRUCTED mean?,"Error code 3_06 indicates that the kiosk's vision camera is blocked”something is physically covering or dirtying the lens, preventing product recognition."
 3_06,How do I clean the camera window?,"Power off the kiosk, open the service panel, locate the camera housing, gently wipe the lens with a lint-free cloth and isopropyl alcohol, then let it dry before restarting."
 3_06,Where is the camera housing located?,"The camera is mounted behind the top-center grill. Remove the grill via its latch, then you'll see the metal camera housing on the right side."
-3_06,How can I check camera alignment?,"After cleaning, power on in maintenance mode (tap logo Ã—10), go to Vision Test ’ Live Feed, and confirm objects are centered in the viewport."
+3_06,How can I check camera alignment?,"After cleaning, power on in maintenance mode (tap logo Ã—10), go to Vision Tƒest ’ Live Feed, and confirm objects are centered in the viewport."
 3_06,What if obstruction persists after cleaning?,"If the view is still blocked, inspect the housing interior for loose cables or debris, reseat the ribbon cable, and if needed replace the housing assembly per the Hardware Replacement Process."
 
 3_08,What does MACHINE_CLOSED mean?,"Error code 3_08 means the kiosk believes the door is closed, so it won't accept open-door commands until the door sensor reports open."
