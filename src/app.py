@@ -20,6 +20,10 @@ from rapidfuzz import fuzz, process
 from streamlit_feedback import streamlit_feedback
 from chromadb import Client
 from chromadb.config import Settings
+# force sqlite3 to use the pip-installed bundle
+__import__("pysqlite3")
+import sys
+sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 
 st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
 st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
