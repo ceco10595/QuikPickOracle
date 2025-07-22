@@ -3,6 +3,9 @@
 # ── FORCE Chroma to use our pip‑installed sqlite3 ─────────────────────────────
 import sys
 # replace the built‑in sqlite3 module with pysqlite3
+__import__('pysqlite3') 
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 import re
 import csv, os
 from pathlib import Path
