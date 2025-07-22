@@ -8,10 +8,10 @@ primaryColor               = "#005CB4"
 accentColor                = "#63A9DF"
 
 # ③ Very‑pale version of the sky‑blue for cards & sidebar
-secondaryBackgroundColor   = "#F2F8FC"
+#secondaryBackgroundColor   = "#F2F8FC"
 
 # ④ Main page background (matches the logo’s white)
-backgroundColor            = "#FFFFFF"
+#backgroundColor            = "#FFFFFF"
 
 # ⑤ Deep navy text for good contrast on white/tint backgrounds
 textColor                  = "#194481"
