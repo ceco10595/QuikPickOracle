@@ -1,37 +1,28 @@
 # pyright: reportAttributeAccessIssue=false, reportArgumentType=false
 # src/app.py
-# ── FORCE Chroma to use our pip‑installed sqlite3 ─────────────────────────────
-import sys
-# replace the built‑in sqlite3 module with pysqlite3
 __import__('pysqlite3') 
+import sys 
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 import re
-import csv, os
+import csv
 from pathlib import Path
 from typing import List, Dict, Any
 from PIL import Image
 
 import streamlit as st
+from chromadb import PersistentClient
 from langchain_core.messages import HumanMessage, AIMessage
 from sentence_transformers import SentenceTransformer
 from numpy import dot
 from numpy.linalg import norm
+from huggingface_hub import InferenceClient
 
 from prompt_templates import SYSTEM_TEMPLATE, build_prompt
 from feedback_db import save as save_feedback          
 from feedback_db import _append_positive, _append_negative  
 from rapidfuzz import fuzz, process 
 from streamlit_feedback import streamlit_feedback
-from chromadb import PersistentClient
-from huggingface_hub import InferenceClient
-
-import torch
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    TextStreamer, #type: ignore
-    pipeline, #type: ignore
-)
 st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
 st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
 st.session_state.setdefault("pending_q", None)
@@ -53,26 +44,23 @@ with col2:
 
 # ── CONFIG ────────────────────────────────────────────────────────────────
 #MODEL_PATH = "models/llama-3-13b-Instruct-Q4_K_M.gguf"
-#LORA_PATH  = "models/lora-adapter"
+LORA_PATH  = "models/lora-adapter"
 VECTOR_DIR = "vectorstore"
 ERROR_RE   = re.compile(r"^\d+_\d+$")
 MAX_TOKENS = 256
 MEM_TURNS  = 8
 
-
 # ── CACHES ─────────────────────────────────────────────────────────────────
-# ── CACHES ───────────────────────────────────────────────────────────────
 @st.cache_resource(show_spinner="Connecting to HF Inference API…")
 def load_llm() -> InferenceClient:
     token    = st.secrets["hf"]["api_token"]
-    MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"      # or 13B if you deploy it
+    MODEL_ID = "meta-llama/Meta-Llama-3-70B-Instruct"  # swap to 13B if you like
     return InferenceClient(model=MODEL_ID, token=token)
+llm = load_llm()
 
 def run_llm(prompt: str) -> str:
     """
-    Call the chat‑completion endpoint (supported by the novita provider).
-    We wrap our whole prompt into a single user turn; adjust `system`
-    if you want a separate system message.
+    Wrap our whole prompt into a single chat call.
     """
     resp = llm.chat_completion(
         messages=[
@@ -82,20 +70,18 @@ def run_llm(prompt: str) -> str:
         max_tokens=MAX_TOKENS,
         temperature=0.2,
         top_p=0.95,
+        # you can also pass stop=["<END>"] if supported
     )
-    # `resp` is a dataclass; the text is in the first choice
-    return (resp.choices[0].message.content or "").strip()      # ok for Pylance
+    # extract the assistant’s reply
+    return (resp.choices[0].message.content or "").strip()
 
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
-    # use the new PersistentClient API (no Settings needed)
-    client = PersistentClient(path=VECTOR_DIR)
-    # will create the “errors” collection if it doesn’t exist
-    return client.get_or_create_collection(name="errors")
+    return PersistentClient(path=VECTOR_DIR).get_collection("errors")
 
 @st.cache_resource(show_spinner="Loading embedder…")
 def load_embedder():
-    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="cpu")
+    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="mps")
 
 llm      = load_llm()
 store    = load_store()
@@ -155,7 +141,6 @@ def _rerun():
         st.rerun()
     else:
         st.experimental_rerun()
-
 
 # ── HELPERS ─────────────────────────────────────────────────────────────────
 QA_PATH = Path("data/sample_qa.csv")
@@ -475,7 +460,7 @@ if st.session_state.pending_q:
     # if they’ve asked “the same” >3 times, escalate
     if repeat_count > 2:
         st.session_state.history.append(
-            AIMessage(content="Contact QuikPick support staff at (123) 456-7890")
+            AIMessage(content="Check if the cooler shopping cart is present in the CCR. If the CCR is stuck in the shopping cart, reboot the cooler by press the GFCIs RESET button, unplugging and re-plugging the mains cord, then opening the Service UI ? Reboot dialog.")
         )
         # clear the “thinking” flag so we don’t lock the input
         st.session_state.is_thinking = False
@@ -504,26 +489,17 @@ if st.session_state.pending_q:
             m.content for m in st.session_state.history[-MEM_TURNS:]
         )
         prompt = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
+        # call HF Inference API instead of local llama
+        raw = run_llm(prompt)
 
-        raw = run_llm(prompt).lstrip()   # keep leading “###” if present
-
-        # strip any model stop token first
         if "<END>" in raw:
-            raw = raw.split("<END>", 1)[0].strip()
+            raw = raw.split("<END>", 1)[0].rstrip()
 
-        # ── NEW extraction ───────────────────────────────────────────
-        if "### Follow-Up" in raw:
-            main_ans, llm_fups = raw.split("### Follow-Up", 1)
-            main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
+    main_ans, llm_fups = (raw.split("### Follow-Up", 1) + [""])[:2]
+    main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
 
-            # model sometimes starts with the tag → main_ans == ""
-            if not main_ans:
-                main_ans, llm_fups = llm_fups, ""      # never let it be empty
-        else:
-            main_ans, llm_fups = raw.strip(), ""
-
-        if not main_ans:                              # final safeguard
-            main_ans = "*Sorry, I didn’t catch that – could you rephrase?*"
+    if not main_ans:
+        main_ans, llm_fups = raw.strip(), ""
 
     # stash Q/A + follow‑ups for replay
     mid = len(st.session_state.history)
