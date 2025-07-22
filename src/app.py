@@ -538,7 +538,11 @@ for kind, payload in st.session_state.pop("to_log", []):
     else:
         log_negative(*payload)   # type: ignore[arg-type]
 
-# 5) Reset
-if st.button("↻ Start over"):
-    st.session_state.clear()
-    _rerun()
+# Make three equal‑width columns
+col1, col2, col3 = st.columns(3)
+
+# Put the button in the middle column
+with col2:
+    if st.button("↻ Start over", use_container_width=True):
+        st.session_state.clear()
+        st.experimental_rerun()   # or _rerun() if you wrapped this
