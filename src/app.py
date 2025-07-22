@@ -260,35 +260,45 @@ if st.session_state.code is None:
     st.stop()
 
 # 2) Banner (fixed backtick removed)
-# --- brand CSS -------------------------------------------------------------
+# ── Drop this near the top, with your other CSS ───────────────────────────
 st.markdown(
     """
     <style>
-    /* 1) Follow‑up buttons (you already have this colour) */
-    div.stButton button {
-        color: #005CB4 !important;      /* dark Pepsi blue */
-        width: auto !important;
-        min-width: 0 !important;
-    }
-
-    /* 2) Error‑code detail block inside the expander */
-    .error-details {
-        color: #63A9DF;                 /* sky‑blue */
-        font-weight: 600;
-    }
+    /* card wrapper */
+    .qp-card       {background:#F2F8FC;padding:1.2rem 1.4rem;
+                    border-radius:0.6rem;margin:0 0 1.2rem 0;}
+    /* the three rows */
+    .qp-code       {font-size:1.4rem;font-weight:700;color:#005CB4;}
+    .qp-message    {font-size:1.05rem;font-weight:600;color:#194481;}
+    .qp-solution   {margin-top:0.6rem;color:#194481;}
+    /* nice bullet list for multi‑line solutions */
+    .qp-solution ul{margin:0 0 0.2rem 1.2rem;padding:0;}
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-main = next(d for d in st.session_state.docs if "Message" in d["meta"])
-with st.expander("Error‑code details", expanded=False):
+# ── Replace your current expander block with this call ────────────────────
+def show_error_details(meta: dict):
+    """
+    Render a friendly, colour‑themed card for the main error doc.
+    """
+    code     = meta["ErrorCode"]
+    message  = meta.get("Message", "—")
+    solution = meta.get("Solution", "—")
+
+    # convert \n to HTML list items if multiple lines
+    bullets = "".join(f"<li>{line.strip()}</li>"
+                      for line in solution.splitlines() if line.strip())
+
     st.markdown(
         f"""
-        <div class="error-details">
-        <b>Error Code:</b> {main['meta']['ErrorCode']}<br>
-        <b>Message:</b> {main['meta']['Message']}<br>
-        <b>Solution:</b> {main['meta']['Solution']}
+        <div class="qp-card">
+            <div class="qp-code">⚠️ Error {code}</div>
+            <div class="qp-message">{message}</div>
+            <div class="qp-solution">
+                <ul>{bullets or '<li>(no solution text)</li>'}</ul>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
