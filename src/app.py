@@ -31,7 +31,7 @@ logo = Image.open("images/QuikPick.png")
 
 # set the small icon in the browser tab / window
 st.set_page_config(
-    #page_title="QuikPick Oracle",
+    page_title="QuikPick Oracle",
     page_icon="images/QuikPick.png",  
     layout="centered",
 )
@@ -227,8 +227,6 @@ st.session_state.setdefault("history", [])
 st.session_state.setdefault("step_counter", 0) # canned follow ups (steps the user has clicked so far)
 
 # ── UI ───────────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="QuikPick Oracle", layout="centered")
-st.title("QuikPick Oracle")
 
 # 1) Select error code
 if st.session_state.code is None:
