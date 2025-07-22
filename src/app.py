@@ -57,7 +57,7 @@ MEM_TURNS  = 8
 def load_llm():
     return InferenceApi(
         repo_id="meta-llama/Llama-3-13b-Instruct",      # or your preferred HF repo
-        token=st.secrets["hf"]["api_token"],
+        token=st.secrets["hf"]["hf_token"],
     )
 
 llm = load_llm()
