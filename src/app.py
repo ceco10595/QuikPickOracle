@@ -84,7 +84,7 @@ def run_llm(prompt: str) -> str:
         top_p=0.95,
     )
     # `resp` is a dataclass; the text is in the first choice
-    return resp.choices[0].message.content.strip()
+    return (resp.choices[0].message.content or "").strip()      # ok for Pylance
 
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
@@ -505,14 +505,25 @@ if st.session_state.pending_q:
         )
         prompt = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
 
-        raw = run_llm(prompt)
+        raw = run_llm(prompt).lstrip()   # keep leading “###” if present
 
-        # strip off your stop token
+        # strip any model stop token first
         if "<END>" in raw:
             raw = raw.split("<END>", 1)[0].strip()
 
-    main_ans, llm_fups = (raw.split("### Follow-Up", 1) + [""])[:2]
-    main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
+        # ── NEW extraction ───────────────────────────────────────────
+        if "### Follow-Up" in raw:
+            main_ans, llm_fups = raw.split("### Follow-Up", 1)
+            main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
+
+            # model sometimes starts with the tag → main_ans == ""
+            if not main_ans:
+                main_ans, llm_fups = llm_fups, ""      # never let it be empty
+        else:
+            main_ans, llm_fups = raw.strip(), ""
+
+        if not main_ans:                              # final safeguard
+            main_ans = "*Sorry, I didn’t catch that – could you rephrase?*"
 
     # stash Q/A + follow‑ups for replay
     mid = len(st.session_state.history)
