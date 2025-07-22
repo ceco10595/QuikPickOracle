@@ -1,4 +1,16 @@
 [theme]
-base="system"
-primaryColor = "#005CB4"       
-font="sans serif"
+base                    = "system"
+
+primaryColor            = "#005CB4"   # dark Pepsi blue (“QUIK”)
+accentColor             = "#63A9DF"   # sky blue (“PICK”)
+secondaryBackgroundColor = "#F2F8FC"  # light sky for sidebar/cards
+backgroundColor         = "#FFFFFF"   # white page (matches logo)
+textColor               = "#194481"   # navy text
+font                    = "sans serif"
+
+[theme.dark]
+primaryColor            = "#63A9DF"   # flip the two blues if you prefer
+accentColor             = "#005CB4"
+secondaryBackgroundColor = "#15233B"  # deep navy
+backgroundColor         = "#000C1A"   # almost‑black
+textColor               = "#E2ECF8"   # very‑pale sky blue
