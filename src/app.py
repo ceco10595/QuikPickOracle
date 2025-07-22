@@ -538,11 +538,29 @@ for kind, payload in st.session_state.pop("to_log", []):
     else:
         log_negative(*payload)   # type: ignore[arg-type]
 
-# Make three equal‑width columns
-col1, col2, col3, col4, col5 = st.columns(5)
+import streamlit as st
 
-# Put the button in the middle column
-with col3:
-    if st.button("↻", use_container_width=True):
+# ------ 1) one‑time CSS tweak ---------------------------------
+st.markdown(
+    """
+    <style>
+    /* Make ALL Streamlit buttons shrink‑to‑fit and turn the text blue.
+       Remove the min‑width that Streamlit normally enforces. */
+    div.stButton > button {
+        color: royalblue !important;   /* text colour            */
+        width: auto !important;        /* shrink to label width  */
+        min-width: 0 !important;       /* override Streamlit min */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ------ 2) draw the centred button ----------------------------
+col1, col2, col3 = st.columns(3)
+
+with col2:                       # middle column → centred
+    if st.button("↻ Start over"):
         st.session_state.clear()
-        st.experimental_rerun()   # or _rerun() if you wrapped this
+        st.experimental_rerun()   # or your _rerun()
+
