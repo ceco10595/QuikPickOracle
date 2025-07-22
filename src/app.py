@@ -260,21 +260,13 @@ if st.session_state.code is None:
     st.stop()
 
 # 2) Banner (fixed backtick removed)
-# ── Brand card styling (put just once) ───────────────────────
-st.markdown(
-    """
-    <style>
-    .qp-card       {background:#F2F8FC;padding:1.2rem 1.4rem;
-                    border-radius:0.6rem;margin-bottom:1.2rem;}
-    .qp-code       {font-size:1.4rem;font-weight:700;color:#005CB4;}
-    .qp-message    {font-size:1.05rem;font-weight:600;color:#194481;}
-    .qp-solution   {margin-top:0.6rem;color:#194481;}
-    .qp-solution ul{margin:0 0 0.2rem 1.2rem;padding:0;}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
+main = next(d for d in st.session_state.docs if "Message" in d["meta"])
+with st.expander("Error-code details", expanded=False):
+    st.markdown(
+        f"**Error Code:** {main['meta']['ErrorCode']}  \n"
+        f"**Message:** {main['meta']['Message']}  \n"
+        f"**Solution:** {main['meta']['Solution']}"
+    )
 # display the first step one of the error code
 if st.session_state.step_counter == 0:
     # find the canned follow‑up for Step 1 of this code
