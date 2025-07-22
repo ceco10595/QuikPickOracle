@@ -31,7 +31,7 @@ logo = Image.open("images/QuikPick.png")
 
 # set the small icon in the browser tab / window
 st.set_page_config(
-    page_title="QuikPick Oracle",
+    #page_title="QuikPick Oracle",
     page_icon="images/QuikPick.png",  
     layout="centered",
 )
