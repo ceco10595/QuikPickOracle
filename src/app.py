@@ -539,6 +539,6 @@ for kind, payload in st.session_state.pop("to_log", []):
         log_negative(*payload)   # type: ignore[arg-type]
 
 # 5) Reset
-if st.button("Start over"):
+if st.button("↻ Start over"):
     st.session_state.clear()
     _rerun()
