@@ -539,10 +539,10 @@ for kind, payload in st.session_state.pop("to_log", []):
         log_negative(*payload)   # type: ignore[arg-type]
 
 # Make three equal‑width columns
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4, col5 = st.columns(5)
 
 # Put the button in the middle column
-with col2:
+with col3:
     if st.button("↻", use_container_width=True):
         st.session_state.clear()
         st.experimental_rerun()   # or _rerun() if you wrapped this
