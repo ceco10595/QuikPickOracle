@@ -260,12 +260,38 @@ if st.session_state.code is None:
     st.stop()
 
 # 2) Banner (fixed backtick removed)
+# --- brand CSS -------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+    /* 1) Follow‑up buttons (you already have this colour) */
+    div.stButton button {
+        color: #005CB4 !important;      /* dark Pepsi blue */
+        width: auto !important;
+        min-width: 0 !important;
+    }
+
+    /* 2) Error‑code detail block inside the expander */
+    .error-details {
+        color: #63A9DF;                 /* sky‑blue */
+        font-weight: 600;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 main = next(d for d in st.session_state.docs if "Message" in d["meta"])
-with st.expander("Error-code details", expanded=True):
+with st.expander("Error‑code details", expanded=True):
     st.markdown(
-        f"**Error Code:** {main['meta']['ErrorCode']}  \n"
-        f"**Message:** {main['meta']['Message']}  \n"
-        f"**Solution:** {main['meta']['Solution']}"
+        f"""
+        <div class="error-details">
+        <b>Error Code:</b> {main['meta']['ErrorCode']}<br>
+        <b>Message:</b> {main['meta']['Message']}<br>
+        <b>Solution:</b> {main['meta']['Solution']}
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 # display the first step one of the error code
 if st.session_state.step_counter == 0:
