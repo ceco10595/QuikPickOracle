@@ -1,5 +1,5 @@
 [theme]
-#base                       = "light"
+base                       = "dark"
 
 # ① Dark Pepsi blue – the word in “QUIK”
 primaryColor               = "#005CB4"
