@@ -5,7 +5,6 @@ import sys
 # replace the built‑in sqlite3 module with pysqlite3
 __import__('pysqlite3') 
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-
 import re
 import csv, os
 from pathlib import Path
@@ -61,28 +60,36 @@ ERROR_RE   = re.compile(r"^\d+_\d+$")
 MAX_TOKENS = 256
 MEM_TURNS  = 8
 
+
 # ── CACHES ─────────────────────────────────────────────────────────────────
 @st.cache_resource(show_spinner="Connecting to HF Inference API…")
 def load_llm():
-    token = st.secrets["hf"]["api_token"]
-    # replace with any public Llama‑3‑Instruct repo that has an inference endpoint
-    return InferenceClient(
-        repo_id="MaziyarPanahi/Llama-3-13B-Instruct-v0.1",
+    token    = st.secrets["hf"]["api_token"]
+    MODEL_ID = "MaziyarPanahi/Llama-3-13B-Instruct-v0.1"
+
+    # instead of loading locally, use the HF Inference API
+    client = InferenceClient(
+        model=MODEL_ID,
         token=token
     )
+    return client
 
 def run_llm(prompt: str) -> str:
-    # call HF Inference API
-    out = llm.text_generation(
+    # call the remote HF text-generation endpoint
+    resp = llm.text_generation(
         inputs=prompt,
-        max_new_tokens=MAX_TOKENS,
-        do_sample=True,       # optional sampling
-        top_p=0.95,
-        temperature=0.2
+        parameters={
+            "max_new_tokens": MAX_TOKENS,
+            "temperature":     0.2,
+            "top_p":           0.95,
+        },
     )
-    # `.generated_text` has the full reply including the prompt; strip it off:
-    gen = out.generated_text
-    return gen[len(prompt):].lstrip()
+    # response can be a list or a dict
+    if isinstance(resp, list):
+        text = resp[0].get("generated_text", "")
+    else:
+        text = resp.get("generated_text", "")
+    return text.strip()
 
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
