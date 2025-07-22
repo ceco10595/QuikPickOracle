@@ -543,6 +543,6 @@ col1, col2, col3 = st.columns(3)
 
 # Put the button in the middle column
 with col2:
-    if st.button("↻ Start over", use_container_width=True):
+    if st.button("↻", use_container_width=True):
         st.session_state.clear()
         st.experimental_rerun()   # or _rerun() if you wrapped this
