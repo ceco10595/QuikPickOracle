@@ -54,7 +54,7 @@ MEM_TURNS  = 8
 @st.cache_resource(show_spinner="Connecting to HF Inference API…")
 def load_llm() -> InferenceClient:
     token    = st.secrets["hf"]["api_token"]
-    MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"  # swap to 13B if you like
+    MODEL_ID = "meta-llama/Llama-3.3-70B-Instruct"  # swap to 13B if you like
     return InferenceClient(model=MODEL_ID, token=token)
 llm = load_llm()
 
