@@ -27,20 +27,19 @@ st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
 st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
 st.session_state.setdefault("pending_q", None)
 st.session_state.setdefault("is_thinking", False)
-bot_avatar = Image.open("images/QuikPick.png")
-bot_avatar.thumbnail((100, 100), Image.LANCZOS)
+bot_avatar = Image.open("images/quikpick_avatar_padded.png")
 user_avatar = Image.open("images/image.png") 
 # set the small icon in the browser tab / window
 st.set_page_config(
     page_title="QuikPick Oracle",
-    page_icon="images/QuikPick.png",  
+    page_icon="images/logo.png",  
     layout="centered",
 )
 
 # instead of st.image(..., use_column_width=True)
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    st.image("images/QuikPick.png", width=350)   # adjust width to taste
+    st.image("images/logo.png", width=350)   # adjust width to taste
 
 
 # ── CONFIG ────────────────────────────────────────────────────────────────
