@@ -106,7 +106,7 @@ def get_answer(prompt: str, *, max_retry: int = 1) -> str:
     raw = run_llm(prompt)
 
     tries = 0
-    while raw.lstrip().lower().startswith("### follow-up") and tries < max_retry:
+    while raw.lstrip().lower().startswith("<Follow‑Up>") and tries < max_retry:
         tries += 1
         raw = run_llm(
             prompt
