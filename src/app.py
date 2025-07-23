@@ -57,7 +57,7 @@ HF_TOKEN  = st.secrets["hf"]["api_token"]  # your write/read token
 # ── CACHES ─────────────────────────────────────────────────────────────────
 
 def run_llm(prompt: str) -> str:
-    url = f"https://huggingface.co/spaces/{SPACE_ID}/run/chat"
+    url = f"https://huggingface.co/spaces/{SPACE_ID}"
     headers = {"Authorization": f"Bearer {HF_TOKEN}"}
     resp = httpx.post(url, headers=headers, json={"prompt": prompt})
     resp.raise_for_status()
