@@ -89,6 +89,35 @@ embedder = load_embedder()
 
 # ── HELPERS ─────────────────────────────────────────────────────────────────
 # helpers.py  
+# ── HELPERS ────────────────────────────────────────────────────────────────
+# … existing helpers like retrieve_similar(), best_qa_match(), qa_answer() …
+
+# ---------- Follow‑Up splitter (NEW) --------------------------------------
+_FUP_HDR = re.compile(
+    r""" ^                # start of line
+          (?:\s*#+\s*)?   # optional Markdown heading like ### or ##
+          (?:\*{1,2})?    # optional leading * or ** for bold/italic
+          follow[-\s]?up  # the words “follow up” or “follow‑up”
+          [:]?\s*         # optional colon
+          (?:\*{1,2})?    # optional trailing * or **
+          $               # end of line
+    """,
+    re.I | re.X
+)
+
+def split_reply(raw: str) -> tuple[str, str]:
+    """
+    Split the LLM reply into (main_answer, follow_ups_text).
+    Returns ("full reply", "") if no follow‑up header is found.
+    """
+    lines = raw.splitlines()
+    for idx, line in enumerate(lines):
+        if _FUP_HDR.match(line.strip()):
+            main = "\n".join(lines[:idx]).strip()
+            fups = "\n".join(lines[idx + 1 :]).strip()
+            return main, fups
+    return raw.strip(), ""
+
 def click_fup(q: str):
     # if this q matches one of our canned step questions, advance the counter
     for d in st.session_state.docs:
@@ -511,19 +540,9 @@ if st.session_state.pending_q:
 
         if "<END>" in raw:
             raw = raw.split("<END>", 1)[0].rstrip()
-    _FUP_HDR = re.compile(
-        r""" ^                # start of line
-            (?:\s*#+\s*)?   # optional Markdown heading like ### or ##
-            (?:\*{1,2})?    # optional leading * or ** for bold/italic
-            follow[-\s]?up  # the words “follow up” or “follow‑up”
-            [:]?\s*         # optional colon
-            (?:\*{1,2})?    # optional trailing * or **
-            $               # end of line
-        """,
-        re.I | re.X
-    )
 
-    main_ans, llm_fups = (raw.split("### Follow-Up", 1) + [""])[:2]
+
+    main_ans, llm_fups = split_reply(raw)
     main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
 
     if not main_ans:
