@@ -95,7 +95,7 @@ embedder = load_embedder()
 # ---------- Follow‑Up splitter (NEW) --------------------------------------
 _FUP_HDR = re.compile(
     r""" ^                # start of line
-          (?:\s*#+\s*)?   # optional Markdown heading like ### or ##
+          (?:\s*\#+\s*)?   # optional Markdown heading like ### or ##
           (?:\*{1,2})?    # optional leading * or ** for bold/italic
           follow[-\s]?up  # the words “follow up” or “follow‑up”
           [:]?\s*         # optional colon
