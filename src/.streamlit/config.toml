@@ -5,5 +5,3 @@ secondaryColor             = "#63A9DF"   # sky blue (“PICK”)
 secondaryBackgroundColor = "#F2F8FC"  # light sky for sidebar/cards
 textColor               = "#194481"   # navy text
 font                    = "sans serif"
-dataframeBorderColor = "#63A9DF"
-dataframeHeaderBackgroundColor = "#F2F8FC"
