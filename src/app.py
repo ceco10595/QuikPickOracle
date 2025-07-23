@@ -27,7 +27,7 @@ st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
 st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
 st.session_state.setdefault("pending_q", None)
 st.session_state.setdefault("is_thinking", False)
-bot_avatar = Image.open("images/glass.png")
+bot_avatar = Image.open("images/sphere.png")
 user_avatar = Image.open("images/image.png") 
 # set the small icon in the browser tab / window
 st.set_page_config(
