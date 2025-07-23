@@ -1,6 +1,5 @@
 [theme]
-base                    = "light"
-primaryColor            = "#005CB4"   # dark Pepsi blue (“QUIK”)
-secondaryBackgroundColor             = "#b8e2f4"   # sky blue (“PICK”)
-textColor               = "#194481"   # navy text
-font                    = "sans serif"
+base="light"
+primaryColor="#005cb4"
+secondaryBackgroundColor="#ddf1ff"
+textColor="#194481"
