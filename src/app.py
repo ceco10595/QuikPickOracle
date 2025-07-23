@@ -27,12 +27,12 @@ st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
 st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
 st.session_state.setdefault("pending_q", None)
 st.session_state.setdefault("is_thinking", False)
-logo = Image.open("images/QuikPick.png")
-
+bot_avatar = Image.open("images/QuikPick.png")
+user_avatar = Image.open("images/image.png") 
 # set the small icon in the browser tab / window
 st.set_page_config(
     page_title="QuikPick Oracle",
-    page_icon="images/IMG_2963-Photoroom.png",  
+    page_icon="images/QuikPick.png",  
     layout="centered",
 )
 
@@ -293,9 +293,10 @@ last_ai_idx = max(
 )
 for i, msg in enumerate(st.session_state.history):
     if isinstance(msg, HumanMessage):
-        st.chat_message("user").markdown(msg.content)
+        st.chat_message("user", avatar=user_avatar).markdown(msg.content)
+
     else:
-        with st.chat_message("assistant", avatar=logo):
+        with st.chat_message("assistant", avatar=bot_avatar):
             st.markdown(msg.content)
 
             # ensure meta exists (fallback with no follow‑ups)
@@ -445,7 +446,7 @@ if st.session_state.pending_q:
     st.session_state.pending_q = None
 
     # 1) ALWAYS show the user’s question as a chat bubble
-    st.chat_message("user").write(user_q)
+    st.chat_message("user", avatar=user_avatar).write(user_q)
     st.session_state.history.append(HumanMessage(content=user_q))
 
     # 2) Check if it’s one of our canned follow‑ups
@@ -460,7 +461,7 @@ if st.session_state.pending_q:
     # 3) If it’s canned, show it and return immediately
     if canned:
         answer = canned["meta"]["Answer"].strip('"').strip("'")
-        st.chat_message("assistant", avatar=logo).markdown(answer)
+        st.chat_message("assistant", avatar=bot_avatar).markdown(answer)
         st.session_state.history.append(AIMessage(content=answer))
         st.session_state.is_thinking = False
         _rerun()
