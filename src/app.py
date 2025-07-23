@@ -28,6 +28,7 @@ st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
 st.session_state.setdefault("pending_q", None)
 st.session_state.setdefault("is_thinking", False)
 bot_avatar = Image.open("images/QuikPick.png")
+bot_avatar.thumbnail((40, 40), Image.LANCZOS)
 user_avatar = Image.open("images/image.png") 
 # set the small icon in the browser tab / window
 st.set_page_config(
