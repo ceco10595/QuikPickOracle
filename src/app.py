@@ -512,7 +512,8 @@ if st.session_state.pending_q:
         if "<END>" in raw:
             raw = raw.split("<END>", 1)[0].rstrip()
 
-    main_ans, llm_fups = (raw.split("<Follow-Up>", 1) + [""])[:2]
+    parts = re.split(r"(?i)<\s*follow[\-\u2010-\u2015\s]?up\s*>", raw, maxsplit=1)
+    main_ans, llm_fups = (parts + [""])[:2]
     main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
 
     if not main_ans:
