@@ -23,6 +23,8 @@ from feedback_db import save as save_feedback
 from feedback_db import _append_positive, _append_negative  
 from rapidfuzz import fuzz, process 
 from streamlit_feedback import streamlit_feedback
+import httpx
+
 st.session_state.setdefault("to_log", [])   # list of ('pos'|'neg', payload)
 st.session_state.setdefault("assistant_meta", {})   # mid → {"q":…, "a":…}
 st.session_state.setdefault("pending_q", None)
@@ -49,31 +51,33 @@ VECTOR_DIR = "vectorstore"
 ERROR_RE   = re.compile(r"^\d+_\d+$")
 MAX_TOKENS = 512
 MEM_TURNS  = 8
+SPACE_URL = "https://huggingface.co/spaces/QuickPick/Oracle_LLM"
+HF_TOKEN  = st.secrets["hf"]["api_token"]  # your write/read token
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
-@st.cache_resource(show_spinner="Connecting to HF Inference API…")
-def load_llm() -> InferenceClient:
-    token    = st.secrets["hf"]["api_token"]
-    MODEL_ID = "meta-llama/Meta-Llama-3-8B-Instruct"  # swap to 13B if you like
-    return InferenceClient(model=MODEL_ID, token=token)
-llm = load_llm()
+@st.cache_resource(show_spinner="Connecting to Oracle_LLM Space…")
+def load_space_client() -> httpx.Client:
+    return httpx.Client(
+        base_url=SPACE_URL,
+        headers={
+            "Authorization": f"Bearer {HF_TOKEN}",
+            "Content-Type":  "application/json",
+        },
+        timeout=30.0,
+    )
+
+space_client = load_space_client()
 
 def run_llm(prompt: str) -> str:
     """
-    Wrap our whole prompt into a single chat call.
+    Send the prompt to your Space’s /chat route and return the answer.
     """
-    resp = llm.chat_completion(
-        messages=[
-            {"role": "system", "content": "You are QuikPick Oracle."},
-            {"role": "user",   "content": prompt},
-        ],
-        max_tokens=MAX_TOKENS,
-        temperature=0.2,
-        top_p=0.95,
-        # you can also pass stop=["<END>"] if supported
+    resp = space_client.post(
+        "/chat",
+        json={"prompt": prompt},
     )
-    # extract the assistant’s reply
-    return (resp.choices[0].message.content or "").strip()
+    resp.raise_for_status()
+    return resp.json()["answer"].strip()
 
 @st.cache_resource(show_spinner="Opening vector store…")
 def load_store():
@@ -83,7 +87,7 @@ def load_store():
 def load_embedder():
     return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="cpu")
 
-llm      = load_llm()
+llm      = load_space_client()
 store    = load_store()
 embedder = load_embedder()
 
