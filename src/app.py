@@ -39,7 +39,7 @@ st.set_page_config(
 # instead of st.image(..., use_column_width=True)
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    st.image("images/logo.png", width=3500)   # adjust width to taste
+    st.image("images/logo.png", width=350)   # adjust width to taste
 
 
 # ── CONFIG ────────────────────────────────────────────────────────────────
