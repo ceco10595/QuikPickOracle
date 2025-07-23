@@ -511,6 +511,17 @@ if st.session_state.pending_q:
 
         if "<END>" in raw:
             raw = raw.split("<END>", 1)[0].rstrip()
+    _FUP_HDR = re.compile(
+        r""" ^                # start of line
+            (?:\s*#+\s*)?   # optional Markdown heading like ### or ##
+            (?:\*{1,2})?    # optional leading * or ** for bold/italic
+            follow[-\s]?up  # the words “follow up” or “follow‑up”
+            [:]?\s*         # optional colon
+            (?:\*{1,2})?    # optional trailing * or **
+            $               # end of line
+        """,
+        re.I | re.X
+    )
 
     main_ans, llm_fups = (raw.split("### Follow-Up", 1) + [""])[:2]
     main_ans, llm_fups = main_ans.strip(), llm_fups.strip()
