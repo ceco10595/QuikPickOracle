@@ -10,6 +10,4 @@ torch>=2.3.0
 safetensors
 accelerate>=0.20.3
 fastapi
-uvicorn[standard]
-text-generation-server
 httox
