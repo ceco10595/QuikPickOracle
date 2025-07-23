@@ -66,14 +66,14 @@ def load_space_client() -> httpx.Client:
         timeout=30.0,
     )
 
-space_client = load_space_client()
+llm      = load_space_client()
 
 def run_llm(prompt: str) -> str:
     """
-    Send the prompt to your Space’s /chat route and return the answer.
+    Send the prompt to your Space’s /chat route via the /run proxy.
     """
-    resp = space_client.post(
-        "/chat",
+    resp = llm.post(
+        "/run/chat",
         json={"prompt": prompt},
     )
     resp.raise_for_status()
@@ -87,7 +87,6 @@ def load_store():
 def load_embedder():
     return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device="cpu")
 
-llm      = load_space_client()
 store    = load_store()
 embedder = load_embedder()
 
