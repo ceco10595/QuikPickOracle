@@ -1,5 +1,4 @@
 [theme]
-base                    = "base"
 primaryColor            = "#005CB4"   # dark Pepsi blue (“QUIK”)
 secondaryColor             = "#63A9DF"   # sky blue (“PICK”)
 secondaryBackgroundColor = "#F2F8FC"  # light sky for sidebar/cards
