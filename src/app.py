@@ -51,23 +51,11 @@ VECTOR_DIR = "vectorstore"
 ERROR_RE   = re.compile(r"^\d+_\d+$")
 MAX_TOKENS = 512
 MEM_TURNS  = 8
-SPACE_URL = "https://huggingface.co/spaces/QuickPick/Oracle_LLM"
 SPACE_ID = "QuickPick/Oracle_LLM"
+url = f"https://huggingface.co/spaces/{SPACE_ID}/run/chat"
 HF_TOKEN  = st.secrets["hf"]["api_token"]  # your write/read token
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
-@st.cache_resource(show_spinner="Connecting to Oracle_LLM Space…")
-def load_space_client() -> httpx.Client:
-    return httpx.Client(
-        base_url=SPACE_URL,
-        headers={
-            "Authorization": f"Bearer {HF_TOKEN}",
-            "Content-Type":  "application/json",
-        },
-        timeout=30.0,
-    )
-
-llm      = load_space_client()
 
 def run_llm(prompt: str) -> str:
     url = f"https://hf.space/run/{SPACE_ID}/chat"
