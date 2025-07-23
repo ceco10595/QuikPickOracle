@@ -52,6 +52,7 @@ ERROR_RE   = re.compile(r"^\d+_\d+$")
 MAX_TOKENS = 512
 MEM_TURNS  = 8
 SPACE_URL = "https://huggingface.co/spaces/QuickPick/Oracle_LLM"
+SPACE_ID = "QuickPick/Oracle_LLM"
 HF_TOKEN  = st.secrets["hf"]["api_token"]  # your write/read token
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
@@ -69,13 +70,9 @@ def load_space_client() -> httpx.Client:
 llm      = load_space_client()
 
 def run_llm(prompt: str) -> str:
-    """
-    Send the prompt to your Space’s /chat route via the /run proxy.
-    """
-    resp = llm.post(
-        "/run/chat",
-        json={"prompt": prompt},
-    )
+    url = f"https://hf.space/run/{SPACE_ID}/chat"
+    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+    resp = httpx.post(url, headers=headers, json={"prompt": prompt})
     resp.raise_for_status()
     return resp.json()["answer"].strip()
 

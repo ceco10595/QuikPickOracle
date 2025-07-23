@@ -1,7 +1,7 @@
 [theme]
 base                    = "light"
 primaryColor            = "#005CB4"   # dark Pepsi blue (“QUIK”)
-accentColor             = "#63A9DF"   # sky blue (“PICK”)
+secondaryColor             = "#63A9DF"   # sky blue (“PICK”)
 secondaryBackgroundColor = "#F2F8FC"  # light sky for sidebar/cards
 textColor               = "#194481"   # navy text
 font                    = "sans serif"
