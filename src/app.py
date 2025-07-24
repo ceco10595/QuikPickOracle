@@ -188,7 +188,7 @@ def docs_for_code(code: str) -> List[Dict[str, Any]]:
                     "embedding": embedder.encode([row["Question"]])[0]
                 })
 
-    st.write(f"🔍 Loaded {len(docs)} docs for error code {code}.")  # debug
+    #st.write(f"🔍 Loaded {len(docs)} docs for error code {code}.")  # debug
     return docs
 
 def retrieve_similar(q: str, docs: list[dict], k: int = 3) -> list[dict]:
