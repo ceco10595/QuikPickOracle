@@ -62,7 +62,7 @@ def ingest(code_csv, steps_csv=None, qa_csv=None):
 
         step_embs = _embed(step_texts)
 
-    # 3) Load optional sample_qa.csv
+    # 3) Load optional sample_qa.csv with wildcard support
     qa_texts = []
     qa_meta  = []
     qa_embs  = None
@@ -71,16 +71,32 @@ def ingest(code_csv, steps_csv=None, qa_csv=None):
         if not {"ErrorCode", "Question", "Answer"}.issubset(df_qa.columns):
             sys.exit(f"{qa_csv} must contain ErrorCode, Question, Answer columns")
 
+        all_error_codes = df_code["ErrorCode"].unique()
+
         for row in df_qa.itertuples(index=False):
             q = row.Question
             a = row.Answer
-            qa_texts.append(f"Q: {q}\nA: {a}")
-            qa_meta.append({
-                "ErrorCode": row.ErrorCode,
-                "Question":  q,
-                "Answer":    a,
-                "IsQA":      True,
-            })
+
+            if row.ErrorCode.strip() == "*":
+                # Apply to all error codes
+                for ec in all_error_codes:
+                    qa_texts.append(f"Q: {q}\nA: {a}")
+                    qa_meta.append({
+                        "ErrorCode": ec,
+                        "Question":  q,
+                        "Answer":    a,
+                        "IsQA":      True,
+                        "IsGlobal":  True,
+                    })
+            else:
+                qa_texts.append(f"Q: {q}\nA: {a}")
+                qa_meta.append({
+                    "ErrorCode": row.ErrorCode,
+                    "Question":  q,
+                    "Answer":    a,
+                    "IsQA":      True,
+                    "IsGlobal":  False,
+                })
 
         qa_embs = _embed(qa_texts)
 
