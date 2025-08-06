@@ -11,22 +11,32 @@ Usage
 """
 import sys
 import pathlib
+from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
 from chromadb import PersistentClient
 from sentence_transformers import SentenceTransformer
+from PIL import Image
 
+IMG_DIR     = pathlib.Path("data/images")
+#IMG_MODEL   = "sentence-transformers/clip-ViT-B-32"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 VECTOR_DIR  = "vectorstore"
 COLL_NAME   = "errors"
+CAP_CSV   = pathlib.Path("data/image_captions.csv")
 
 
-def _embed(texts):
-    """Encode a list of strings to a float32 NumPy array."""
-    model = SentenceTransformer(EMBED_MODEL, device="mps")
-    embs = model.encode(texts, batch_size=64, show_progress_bar=True)
-    return np.array(embs, dtype=np.float32)
+txt_model = SentenceTransformer(EMBED_MODEL, device="cpu")
+#img_model = SentenceTransformer(IMG_MODEL,  device="cpu")
+
+def _embed_text(texts):
+    return np.asarray(txt_model.encode(texts, batch_size=64, show_progress_bar=True), dtype=np.float32)
+
+#def _embed_imgs(paths):
+#    # CLIP takes image paths or PIL objects
+#    return np.asarray(img_model.encode([str(p) for p in paths]), dtype=np.float32)
+
 
 
 def ingest(code_csv, steps_csv=None, qa_csv=None):
@@ -36,7 +46,7 @@ def ingest(code_csv, steps_csv=None, qa_csv=None):
         sys.exit(f"{code_csv} must contain ErrorCode, Message, Solution columns")
 
     code_texts = df_code["Solution"].tolist()
-    code_embs  = _embed(code_texts)
+    code_embs  =  _embed_text(code_texts)
     code_meta  = df_code[["ErrorCode", "Message", "Solution"]].to_dict("records")
 
     # 2) Load your hand‑written steps.csv (Q/A follow‑ups)
@@ -54,13 +64,13 @@ def ingest(code_csv, steps_csv=None, qa_csv=None):
             step_texts.append(f"Q: {q}\nA: {a}")
             step_meta.append({
                 "ErrorCode": row.ErrorCode,
-                "StepIndex": int(row.step),
+                "StepIndex": int(row.step), # type: ignore
                 "Question":  q,
                 "Answer":    a,
                 "IsFollowUp": True,
             })
 
-        step_embs = _embed(step_texts)
+        step_embs =  _embed_text(step_texts)
 
     # 3) Load optional sample_qa.csv with wildcard support
     qa_texts = []
@@ -77,28 +87,52 @@ def ingest(code_csv, steps_csv=None, qa_csv=None):
             q = row.Question
             a = row.Answer
 
-            if row.ErrorCode.strip() == "*":
+            error_code_field = row.ErrorCode.strip() # type: ignore
+
+            if error_code_field == "*":
                 # Apply to all error codes
-                for ec in all_error_codes:
-                    qa_texts.append(f"Q: {q}\nA: {a}")
-                    qa_meta.append({
-                        "ErrorCode": ec,
-                        "Question":  q,
-                        "Answer":    a,
-                        "IsQA":      True,
-                        "IsGlobal":  True,
-                    })
+                target_codes = all_error_codes
             else:
+                # Support comma-separated list of error codes
+                target_codes = [ec.strip() for ec in error_code_field.split(",")] # type: ignore
+
+            for ec in target_codes:
                 qa_texts.append(f"Q: {q}\nA: {a}")
                 qa_meta.append({
-                    "ErrorCode": row.ErrorCode,
+                    "ErrorCode": ec,
                     "Question":  q,
                     "Answer":    a,
                     "IsQA":      True,
-                    "IsGlobal":  False,
+                    "IsGlobal":  error_code_field == "*",
                 })
 
-        qa_embs = _embed(qa_texts)
+        qa_embs =  _embed_text(qa_texts)
+
+    # 3‑b) Optional: bulk‑load reference images
+    # -------- image captions side‑car (NEW) ----------
+    AP_CSV = pathlib.Path("data/image_captions.csv")
+    ap_map: dict[str, str] = {}
+    if CAP_CSV.exists():
+       cap_map = dict(pd.read_csv(CAP_CSV).values)
+
+
+    img_files = list(IMG_DIR.glob("*.jpg")) + list(IMG_DIR.glob("*.png"))
+    img_docs  = []
+    img_meta  = []
+    img_embs  = None
+
+    if img_files:
+        for p in img_files:
+            caption = cap_map.get(p.name, p.stem.replace("_", " ")) # type: ignore
+            img_docs.append(caption)
+            img_meta.append({
+                "IsImage": True,
+                "filepath": str(p),
+                "Caption":  caption,
+            })
+
+        # embed CAPTIONS with the same 384‑dim model
+        img_embs = _embed_text(img_docs)
 
     # 4) Push everything into Chroma
     client = PersistentClient(path=VECTOR_DIR)
@@ -129,11 +163,21 @@ def ingest(code_csv, steps_csv=None, qa_csv=None):
             embeddings = qa_embs,     # type: ignore[arg-type]
             metadatas  = qa_meta,     # type: ignore[arg-type]
         )
-
+    # d) reference images
+    #print("DEBUG  imgs found:", len(img_files), [p.name for p in img_files][:5])
+    if img_files:
+        col.add(
+            ids        =[f"img-{i}" for i in range(len(img_files))],
+            documents  = img_docs,
+            embeddings = img_embs,        # type: ignore[arg-type]
+            metadatas  = img_meta,        # type: ignore[arg-type]
+        )
     print(
         f"✅ Indexed {len(code_texts)} Solutions"
         + (f", {len(step_texts)} follow‑ups" if step_texts else "")
         + (f", {len(qa_texts)} QA pairs" if qa_texts else "")
+        + (f", {len(img_files)} images"    if img_files else "")
+
     )
 
 

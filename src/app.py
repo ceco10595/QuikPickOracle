@@ -54,7 +54,8 @@ MEM_TURNS  = 8
 @st.cache_resource(show_spinner="Connecting to HF Inference API…")
 def load_llm() -> InferenceClient:
     token    = st.secrets["hf"]["api_token"]
-    MODEL_ID = "meta-llama/Llama-3.3-70B-Instruct"  # swap to 13B if you like
+    MODEL_ID = "meta-llama/Llama-3.3-70B-Instruct"  # swap to 70B
+    #MODEL_ID = "meta-llama/Llama-4-Scout-17B-16E-Instruct"  # swap to 70B
     return InferenceClient(model=MODEL_ID, token=token)
 llm = load_llm()
 
@@ -98,12 +99,36 @@ def click_fup(q: str):
             break
     st.session_state.next_q = q
 
-def get_answer(prompt: str, *, max_retry: int = 1) -> str:
+def get_answer(prompt: str, *, max_retry: int = 1) -> tuple[str, str | None, str | None]:
     """
     Call run_llm(prompt). If the reply begins with '### Follow-Up' (or any
     case‑variant), request a new answer once. Returns the final text.
     """
     raw = run_llm(prompt)
+
+    show_pat = re.compile(r"<SHOW>\s*(?:<([^>]+)>|(\S+))", re.I)
+    m = show_pat.search(raw)
+    img_path: str | None = None
+    img_caption: str | None = None
+
+    if m:
+        fname = m.group(1)                                   # e.g. "anatomy_part2.png"
+
+        img_doc = next(
+            (
+                d for d in st.session_state.docs
+                if d["meta"].get("IsImage")
+                and Path(d["meta"]["filepath"]).name == fname   # ← **fix**
+            ),
+            None,
+        )
+
+        if img_doc:
+            img_path    = img_doc["meta"]["filepath"]          # still the full string path
+            img_caption = img_doc["meta"]["Caption"]
+
+        raw = show_pat.sub("", raw).strip()  # strip the <SHOW> line
+
 
     tries = 0
     while raw.lstrip().lower().startswith("<Follow‑Up>") and tries < max_retry:
@@ -116,7 +141,8 @@ def get_answer(prompt: str, *, max_retry: int = 1) -> str:
             + "add the Follow‑Up block."
         )
 
-    return raw
+    return raw, img_path, img_caption
+
 
 def count_similar_questions(q: str, questions: List[str], threshold: int = 90) -> int:
     """
@@ -165,31 +191,44 @@ QA_PATH = Path("data/sample_qa.csv")
 
 @st.cache_resource(show_spinner="Loading docs…")
 def docs_for_code(code: str) -> List[Dict[str, Any]]:
-    # 1) pull from your Chroma store
-    res = store.get(
+    """Return all docs for this error‑code **plus** any global images."""
+    docs: list[dict] = []
+
+    # 1) rows that belong to the requested error‑code
+    res_code = store.get(
         where={"ErrorCode": code},
         include=["documents", "metadatas", "embeddings"],
     )
-    docs: List[Dict[str,Any]] = []
-    for d, m, e in zip(res["documents"], res["metadatas"], res["embeddings"]):
-        if e is None:
-            e = embedder.encode([d])[0]
-        docs.append({"content": d, "meta": m, "embedding": e})
 
-    # 2) also pull in any saved Q&A for this code
+    # 2) rows that are images (they have IsImage=True in metadata)
+    res_img = store.get(
+        where={"IsImage": True},
+        include=["documents", "metadatas", "embeddings"],
+    )
+
+    # helper – push results into docs[]
+    def _append(res):
+        for d, m, e in zip(res["documents"], res["metadatas"], res["embeddings"]):
+            if e is None:                       # safety: embed on the fly
+                e = embedder.encode([d])[0]
+            docs.append({"content": d, "meta": m, "embedding": e})
+
+    _append(res_code)
+    _append(res_img)
+
+    # 3) any canned QA stored in sample_qa.csv
     if QA_PATH.exists():
         reader = csv.DictReader(QA_PATH.open())
         for row in reader:
-            if row["ErrorCode"] == code:
-                # store as a “canned” QA doc
+            if row["ErrorCode"] == code or row["ErrorCode"].strip() == "*":
                 docs.append({
                     "content": f"Q: {row['Question']}\nA: {row['Answer']}",
                     "meta": {"IsQA": True, "Question": row["Question"]},
-                    "embedding": embedder.encode([row["Question"]])[0]
+                    "embedding": embedder.encode([row["Question"]])[0],
                 })
 
-    #st.write(f"🔍 Loaded {len(docs)} docs for error code {code}.")  # debug
     return docs
+
 
 def retrieve_similar(q: str, docs: list[dict], k: int = 3) -> list[dict]:
     # 1  fuzzy QA match first
@@ -260,7 +299,11 @@ if st.session_state.code is None:
     st.stop()
 
 # 2) Banner (fixed backtick removed)
-main = next(d for d in st.session_state.docs if "Message" in d["meta"])
+main = next((d for d in st.session_state.docs if "Message" in d["meta"]), None)
+if main is None:
+    st.error("Error code not found.")
+    st.stop()
+    
 with st.expander("Error-code details", expanded=False):
     st.markdown(
         f"**Error Code:** {main['meta']['ErrorCode']}  \n"
@@ -298,6 +341,9 @@ for i, msg in enumerate(st.session_state.history):
     else:
         with st.chat_message("assistant", avatar=bot_avatar):
             st.markdown(msg.content)
+            meta = st.session_state["assistant_meta"].get(i, {})
+            if meta.get("img"):
+                st.image(meta["img"], width=300) #caption=meta.get("cap", ""),
 
             # ensure meta exists (fallback with no follow‑ups)
             if i not in st.session_state["assistant_meta"]:
@@ -493,21 +539,38 @@ if st.session_state.pending_q:
         )
 
         # 2) get the top-(k-1) most similar others
-        sim_docs = retrieve_similar(user_q, st.session_state.docs, k=3)
+        sim_docs = retrieve_similar(user_q, st.session_state.docs, k=5)
         # drop main_doc if it snuck in
         sim_docs = [d for d in sim_docs if d is not main_doc]
 
         # 3) assemble final ctx_docs list
-        ctx_docs = [main_doc] + sim_docs[:2]    # total length = 3
+        ctx_docs = [d for d in ([main_doc] + sim_docs[:2]) if not d["meta"].get("IsImage")]
 
         # 4) build the prompt from exactly those
         ctx_block = "\n\n".join(d["content"] for d in ctx_docs)
         hist_txt  = "\n".join(
             m.content for m in st.session_state.history[-MEM_TURNS:]
         )
-        prompt = build_prompt(SYSTEM_TEMPLATE, ctx_block, hist_txt, user_q) + " "
+        img_doc = next((d for d in sim_docs if d["meta"].get("IsImage")), None)
+        img_path = img_doc["meta"]["filepath"] if img_doc else None
+        img_caption = img_doc["meta"]["Caption"] if img_doc else ""
+        # collect every image doc for the *current* error‑code
+        image_catalog = "\n".join(
+            f"- {d['meta']['Caption']}  •  <{Path(d['meta']['filepath']).name}>"
+            for d in st.session_state.docs
+            if d["meta"].get("IsImage")
+        )
+
+        prompt = build_prompt(
+            SYSTEM_TEMPLATE.format(image_catalog=image_catalog),   # <-- new
+            ctx_block,
+            image_catalog,
+            hist_txt,
+            user_q,
+        ) + " "
+
         # call HF Inference API instead of local llama
-        raw = get_answer(prompt)
+        raw, img_path, img_caption = get_answer(prompt)
 
         if "<END>" in raw:
             raw = raw.split("<END>", 1)[0].rstrip()
@@ -522,9 +585,11 @@ if st.session_state.pending_q:
     # stash Q/A + follow‑ups for replay
     mid = len(st.session_state.history)
     st.session_state["assistant_meta"][mid] = {
-        "q":     user_q,
-        "a":     main_ans,
-        "fups":  llm_fups,
+        "q":      user_q,
+        "a":      main_ans,
+        "fups":   llm_fups,
+        "img":    img_path,
+        "cap":    img_caption,
     }
 
     # append AI reply

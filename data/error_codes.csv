@@ -1,4 +1,5 @@
 OrderStage,ErrorCode,Message,Solution
+general,general,general,Use the context to get a solution
 CREATE_ORDER,1_101000100-1_101500203,CREATE_ORDER_ERROR_PLEASE_CHECK_SYSTEM,Contact CV company. Summarize the problem at hand and instruct CV company to check the logs for associated SW/HW/CV/PMT
 QUERY_CONTAINER,2_2,MACHINE_IS_IN_USE,"Check if the cooler shopping cart is present in the CCR. If the CCR is stuck in the shopping cart, reboot the cooler. If system persists, contact CV company"
 QUERY_CONTAINER,2_4,ALGORITHM_FAILURE,"Algorithm failure means that the SW and CV versions are not as expected. Most likely, a SW update is needed. 
