@@ -164,7 +164,7 @@ def ingest(code_csv, steps_csv=None, qa_csv=None):
             metadatas  = qa_meta,     # type: ignore[arg-type]
         )
     # d) reference images
-    #print("DEBUG  imgs found:", len(img_files), [p.name for p in img_files][:5])
+    print("DEBUG  imgs found:", len(img_files), [p.name for p in img_files][:5])
     if img_files:
         col.add(
             ids        =[f"img-{i}" for i in range(len(img_files))],
