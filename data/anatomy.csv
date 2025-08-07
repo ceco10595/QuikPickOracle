@@ -1,0 +1,15 @@
+ErrorCode,Question,Answer
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32",Pulley,"The Pulley is used to hold the override mechanical cable coming out of the lock"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32","Override Cable Mounting Bracket","The Override Cable Mounting Bracket is used to hold the override cable extension in place"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32","Pulley cover","The pulley cover is used to hold the override cable in place and to secure the pulley"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32","Hiron Lock Assembly","The Hiron lock assembly is the Hiron lock; it houses the lock PCB (FW 4.1), override cable, snap-clip, solenoid and wiring. When the lock is disengaged an orange PCB light is visible to the user"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32","Lock Housing","The Lock housigng houses the Hiron lock and the rest of the lock anatomy and is foamed into the cabinet"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32","Access Panel Cover","The Access Panel Cover is a removable cover for servicing the lock"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32","Rubber bumper","The rubber bumper is a circular shape on the RFID mounting piece"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32","RFID Mounting Piece","The RFID mounting piece is the ABS part that covers the striker and holds the RFID tag; it sits on the door and is mounted by two PH2 screws"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32",Striker,"The Striker is a metal part mounted on the door that engages with the lock and is adjustable in the +x and –x direction"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32","Override Cable","The override cable is a short cable exiting the Hiron lock; pulling it disengages the lock and turns on the orange PCB light"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32","Override Cable Extension","The override cable extension attaches the T-Handle to the override cable; pulling it disengages the lock and turns on the orange PCB light"
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32","Snap-Clip","The snap-clip attaches the override cable of the lock to the override cable extension and is part of the Hiron lock assembly"
+
+"2_13,3_03,3_13,3_19,4_4,4_28,4_30,4_31,4_32",Where is the Pulley?,"The Pulley is a servicing part of the Hiron lock. It is located within the lock housing. To locate, remove the access panel cover inside the cooler. Using a PH2 screwdriver, remove the two screws. Once removed, you can access the pulley "
