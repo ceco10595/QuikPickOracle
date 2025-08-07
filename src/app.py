@@ -51,7 +51,7 @@ MEM_TURNS  = 8
 @st.cache_resource(show_spinner="Connecting to Hugging Face…")
 def load_llm():
     return InferenceApi(
-        repo_id="meta-llama/Llama-4-Scout-17B-16E-Instruct",      # or your preferred HF repo
+        repo_id="meta-llama/Llama-3.3-70B-Instruct",      # or your preferred HF repo
         token=st.secrets["hf"]["api_token"],
     )
 
