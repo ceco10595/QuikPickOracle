@@ -51,13 +51,11 @@ MAX_TOKENS = 512
 MEM_TURNS  = 8
 
 # ── CACHES ─────────────────────────────────────────────────────────────────
-@st.cache_resource(show_spinner="Connecting to Hugging Face…")
-def load_llm():
-    return InferenceApi(
-        repo_id="meta-llama/Llama-3-13b-Instruct",      # or your preferred HF repo
-        token=st.secrets["hf"]["api_token"],
-    )
-
+@st.cache_resource(show_spinner="Connecting to HF Inference API…")
+def load_llm() -> InferenceClient:
+    token    = st.secrets["hf"]["api_token"]
+    MODEL_ID = "meta-llama/Llama-3.3-70B-Instruct"  # swap to 13B if you like
+    return InferenceClient(model=MODEL_ID, token=token)
 llm = load_llm()
 
 def run_llm(prompt: str) -> str:
